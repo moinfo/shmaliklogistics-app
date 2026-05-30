@@ -4,7 +4,7 @@ import 'typography.dart';
 import '../utils/app_theme.dart';
 import '../utils/colors.dart';
 
-/// Shared "SH Malik mobile" design kit — the "Operations Command" language.
+/// Shared "Trans-Mas mobile" design kit — the "Operations Command" language.
 ///
 /// One source of visual truth: a blueprint-grid brand header, gradient-chip
 /// stat tiles with tabular numerals, soft-shadow cards with status rails,

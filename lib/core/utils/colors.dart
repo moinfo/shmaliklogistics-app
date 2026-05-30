@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const kPrimary = Color(0xFF1565C0);   // SH Malik blue
+const kPrimary = Color(0xFF1565C0);   // Trans-Mas blue
 const kAccent  = Color(0xFF0288D1);
 const kBg      = Color(0xFFF5F7FA);
 const kCard    = Colors.white;

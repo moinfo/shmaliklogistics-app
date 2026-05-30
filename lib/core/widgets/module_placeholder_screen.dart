@@ -84,7 +84,7 @@ class ModulePlaceholderScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
                         Text(
-                          'This module is fully available on the SH Malik web '
+                          'This module is fully available on the Trans-Mas web '
                           'portal. A native mobile experience is on the way.',
                           style: AppType.body(14, color: kMuted, height: 1.5),
                         ),

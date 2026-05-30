@@ -289,7 +289,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         icon: Icons.info_outline_rounded,
         rows: const [
           _InfoRow(label: 'Version', value: '1.0.0', isNumber: true),
-          _InfoRow(label: 'Support', value: 'support@shmalik.co.tz', isLast: true),
+          _InfoRow(label: 'Support', value: 'support@transmaslogistics.co.tz', isLast: true),
         ],
       ),
     ];

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 
     <application
-        android:label="shmalik_driver"
+        android:label="Trans-Mas Logistics"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

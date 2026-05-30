@@ -474,7 +474,7 @@ class _AccountTab extends StatelessWidget {
   void _showAbout(BuildContext context) {
     showAboutDialog(
       context: context,
-      applicationName: 'SH Malik Logistics',
+      applicationName: 'Trans-Mas Logistics',
       applicationVersion: _appVersion,
       applicationIcon: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -494,7 +494,7 @@ class _AccountTab extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Help & Support'),
         content: Text(
-          'For assistance, contact your system administrator or the SH Malik '
+          'For assistance, contact your system administrator or the Trans-Mas '
           'support team. Full module management is available on the web portal.',
           style: AppType.body(14, color: AppColors.textPrimary(ctx)),
         ),
@@ -526,7 +526,7 @@ class _AccountTab extends StatelessWidget {
       children: [
         AppGradientHeader(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 36),
-          eyebrow: 'SH Malik Logistics',
+          eyebrow: 'Trans-Mas Logistics',
           title: 'Account',
           trailing: const SizedBox.shrink(),
         ),

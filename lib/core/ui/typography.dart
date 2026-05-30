@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// "Operations Command" type system for SH Malik mobile.
+/// "Operations Command" type system for Trans-Mas mobile.
 ///
 /// - **Display & numerals:** Archivo — a confident grotesque. Numbers use
 ///   tabular figures so stats and ledgers align like a fleet/finance readout.

@@ -14,7 +14,7 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  static const String _liveUrl  = 'https://shmaliklogistics.co.tz/api';
+  static const String _liveUrl  = 'https://transmaslogistics.co.tz/api';
   static const String _localUrl = 'http://127.0.0.1:8000/api';
 
   // Release builds → live server. Debug/profile → local server.

@@ -280,7 +280,7 @@ class AppDrawer extends StatelessWidget {
       leaf.shellTab == activeTabLabel;
 }
 
-/// Navy gradient band with the SH Malik logo + wordmark.
+/// Navy gradient band with the Trans-Mas logo + wordmark.
 class _DrawerHeader extends StatelessWidget {
   const _DrawerHeader();
 
@@ -321,7 +321,7 @@ class _DrawerHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('SH MALIK',
+                    Text('TRANS-MAS',
                         style: AppType.display(18, color: Colors.white, letterSpacing: 0.3)),
                     const SizedBox(height: 2),
                     Text(session.name.isEmpty ? 'Logistics Platform' : session.name,

@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 28),
               Text(
-                'SH MALIK LOGISTICS',
+                'TRANS-MAS LOGISTICS',
                 textAlign: TextAlign.center,
                 style: AppType.display(23, color: Colors.white, letterSpacing: 0.5),
               ),

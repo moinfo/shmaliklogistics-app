@@ -17,17 +17,17 @@ import 'features/profile/screens/profile_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await loadSavedTheme();
-  runApp(const ShMalikApp());
+  runApp(const TransMasApp());
 }
 
-class ShMalikApp extends StatefulWidget {
-  const ShMalikApp({super.key});
+class TransMasApp extends StatefulWidget {
+  const TransMasApp({super.key});
 
   @override
-  State<ShMalikApp> createState() => _ShMalikAppState();
+  State<TransMasApp> createState() => _TransMasAppState();
 }
 
-class _ShMalikAppState extends State<ShMalikApp> {
+class _TransMasAppState extends State<TransMasApp> {
   late final AuthStorage _authStorage;
   late final ApiClient _apiClient;
   late final AuthService _authService;
@@ -45,7 +45,7 @@ class _ShMalikAppState extends State<ShMalikApp> {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
       builder: (_, mode, child) => MaterialApp(
-        title: 'SH Malik Driver',
+        title: 'Trans-Mas Logistics',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,

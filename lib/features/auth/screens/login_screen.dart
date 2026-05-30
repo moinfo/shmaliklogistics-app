@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = null;
     });
 
-    final result = await _bio.authenticate(reason: 'Sign in to SH Malik Logistics');
+    final result = await _bio.authenticate(reason: 'Sign in to Trans-Mas Logistics');
     if (!mounted) return;
     if (!result.success) {
       setState(() {
@@ -333,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen>
           ),
           const SizedBox(height: 22),
           Text(
-            'SH MALIK LOGISTICS',
+            'TRANS-MAS LOGISTICS',
             textAlign: TextAlign.center,
             style: AppType.display(23, color: Colors.white, letterSpacing: 0.5),
           ),
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen>
             _buildField(
               controller: _loginController,
               label: 'Email or Card ID',
-              hint: 'e.g. juma@shmalik.co.tz',
+              hint: 'e.g. juma@transmaslogistics.co.tz',
               icon: Icons.badge_outlined,
               keyboardType: TextInputType.emailAddress,
               action: TextInputAction.next,
@@ -594,7 +594,7 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'SH MALIK LOGISTICS',
+                    'TRANS-MAS LOGISTICS',
                     style: AppType.eyebrow(
                       size: 10,
                       color: AppColors.textNavy(context).withValues(alpha: 0.5),

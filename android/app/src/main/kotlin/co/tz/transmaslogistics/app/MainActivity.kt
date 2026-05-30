@@ -1,4 +1,4 @@
-package co.tz.shmalik.shmalik_driver
+package co.tz.transmaslogistics.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
