@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../ui/typography.dart';
+import '../ui/ui_kit.dart';
 import '../utils/app_theme.dart';
 import '../utils/colors.dart';
 
@@ -35,37 +38,67 @@ class CommandNavBar extends StatelessWidget {
   });
 
   /// Brand gradient, shared with the command header.
-  static const List<Color> _gradient = [Color(0xFF0B1638), Color(0xFF1D4ED8)];
+  static const List<Color> _gradient = [Color(0xFF7A2800), Color(0xFFEA580C)];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Tahoe-style frosted bar — content slides under it and gets blurred.
+    // Manually composed (rather than wrapped in LiquidGlass) so the highlight
+    // line lives on the TOP edge only and the soft drop shadow points UPWARD.
+    final tintColor = isDark ? GlassTokens.tintDark : GlassTokens.tintLight;
+    final highlight = Colors.white.withValues(
+      alpha: isDark ? GlassTokens.highlightDarkAlpha : GlassTokens.highlightLightAlpha,
+    );
+    final topA = isDark ? GlassTokens.tintDarkTopAlpha : GlassTokens.tintLightTopAlpha;
+    final botA = isDark ? GlassTokens.tintDarkBotAlpha : GlassTokens.tintLightBotAlpha;
+
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.navBar(context),
-        border: Border(top: BorderSide(color: AppColors.border(context))),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 24,
             offset: const Offset(0, -6),
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
-          child: Row(
-            children: [
-              for (var i = 0; i < items.length; i++)
-                Expanded(
-                  child: _NavItem(
-                    item: items[i],
-                    selected: i == currentIndex,
-                    onTap: () => onSelect(i),
-                  ),
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: GlassTokens.blurSigmaBar,
+            sigmaY: GlassTokens.blurSigmaBar,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  tintColor.withValues(alpha: topA),
+                  tintColor.withValues(alpha: botA),
+                ],
+              ),
+              border: Border(top: BorderSide(color: highlight, width: 1)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
+                child: Row(
+                  children: [
+                    for (var i = 0; i < items.length; i++)
+                      Expanded(
+                        child: _NavItem(
+                          item: items[i],
+                          selected: i == currentIndex,
+                          onTap: () => onSelect(i),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           ),
         ),
       ),
@@ -109,7 +142,7 @@ class _NavItem extends StatelessWidget {
                 boxShadow: selected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF1D4ED8).withValues(alpha: 0.34),
+                          color: const Color(0xFFEA580C).withValues(alpha: 0.34),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

@@ -58,7 +58,7 @@ class ModulePlaceholderScreen extends StatelessWidget {
                               height: 46,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF0B1638), Color(0xFF1D4ED8)],
+                                  colors: [Color(0xFF7A2800), Color(0xFFEA580C)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),

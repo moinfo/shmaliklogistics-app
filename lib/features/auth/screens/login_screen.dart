@@ -4,6 +4,7 @@ import 'package:local_auth/local_auth.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/services/biometric_service.dart';
 import '../../../core/ui/typography.dart';
+import '../../../core/ui/ui_kit.dart';
 import '../../../core/utils/app_theme.dart';
 import '../../../core/utils/colors.dart';
 import '../../../core/utils/theme_notifier.dart';
@@ -211,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen>
     final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1B3E),
+      backgroundColor: const Color(0xFF1E0800),
       body: Stack(
         children: [
           // Background gradient
@@ -220,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF0D1B3E), Color(0xFF1565C0), Color(0xFF0A2540)],
+                colors: [Color(0xFF1E0800), Color(0xFFEA580C), Color(0xFF1E0800)],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -359,16 +360,28 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildFormSheet() {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.surface(context),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 30,
+            offset: const Offset(0, -8),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.fromLTRB(28, 36, 28, 40),
-      child: Form(
+      child: LiquidGlass(
+        radius: const BorderRadius.only(
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
+        ),
+        padding: const EdgeInsets.fromLTRB(28, 36, 28, 40),
+        sigma: GlassTokens.blurSigmaSheet,
+        child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -445,6 +458,7 @@ class _LoginScreenState extends State<LoginScreen>
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -475,7 +489,11 @@ class _LoginScreenState extends State<LoginScreen>
         prefixIcon: Icon(icon, color: kMuted, size: 20),
         suffixIcon: suffix,
         filled: true,
-        fillColor: AppColors.surfaceVariant(context),
+        // Translucent fill so the frosted sheet bleeds through and the input
+        // reads as a recessed pane of glass rather than a solid pill.
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.white.withValues(alpha: 0.45),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
@@ -526,15 +544,15 @@ class _LoginScreenState extends State<LoginScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                SizedBox(
                   width: 62,
                   height: 62,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: kPrimary.withValues(alpha: 0.10),
-                    border: Border.all(color: kPrimary.withValues(alpha: 0.30), width: 1.5),
+                  child: LiquidGlass(
+                    radius: BorderRadius.circular(31),
+                    child: Center(
+                      child: Icon(_biometricIcon, size: 28, color: kPrimary),
+                    ),
                   ),
-                  child: Icon(_biometricIcon, size: 31, color: kPrimary),
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -637,9 +655,9 @@ class _LoginScreenState extends State<LoginScreen>
       child: ElevatedButton(
         onPressed: _isLoading ? null : _submit,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D1B3E),
+          backgroundColor: const Color(0xFF1E0800),
           foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF0D1B3E).withValues(alpha: 0.5),
+          disabledBackgroundColor: const Color(0xFF1E0800).withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),

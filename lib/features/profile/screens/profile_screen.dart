@@ -713,10 +713,10 @@ class _ChangePasswordSheetState extends State<_ChangePasswordSheet> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D1B3E),
+                    backgroundColor: const Color(0xFF1E0800),
                     foregroundColor: Colors.white,
                     disabledBackgroundColor:
-                        const Color(0xFF0D1B3E).withValues(alpha: 0.5),
+                        const Color(0xFF1E0800).withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),

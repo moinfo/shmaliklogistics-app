@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   static ThemeData get light => ThemeData(
         brightness: Brightness.light,
-        colorSchemeSeed: const Color(0xFF1565C0),
+        colorSchemeSeed: const Color(0xFFEA580C),
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFF1F5F9),
         cardColor: Colors.white,
@@ -16,7 +16,7 @@ class AppTheme {
 
   static ThemeData get dark => ThemeData(
         brightness: Brightness.dark,
-        colorSchemeSeed: const Color(0xFF1565C0),
+        colorSchemeSeed: const Color(0xFFEA580C),
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFF0F172A),
         cardColor: const Color(0xFF1E293B),
@@ -49,7 +49,7 @@ class AppColors {
 
   // Dark-navy text that flips to white in dark mode
   static Color textNavy(BuildContext context) =>
-      isDark(context) ? Colors.white : const Color(0xFF0D1B3E);
+      isDark(context) ? Colors.white : const Color(0xFF1E0800);
 
   // Bottom nav container
   static Color navBar(BuildContext context) =>
@@ -58,11 +58,11 @@ class AppColors {
   // Nav indicator pill
   static Color navIndicator(BuildContext context) => isDark(context)
       ? Colors.white.withValues(alpha: 0.10)
-      : const Color(0xFF0D1B3E).withValues(alpha: 0.08);
+      : const Color(0xFF1E0800).withValues(alpha: 0.08);
 
   // Selected nav icon
   static Color navIcon(BuildContext context) =>
-      isDark(context) ? Colors.white : const Color(0xFF0D1B3E);
+      isDark(context) ? Colors.white : const Color(0xFF1E0800);
 
   // Unselected filter chip background
   static Color chipUnselected(BuildContext context) =>

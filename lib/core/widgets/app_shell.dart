@@ -544,7 +544,7 @@ class _AccountTab extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF0D1B3E), Color(0xFF1565C0)],
+                          colors: [Color(0xFF1E0800), Color(0xFFEA580C)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),

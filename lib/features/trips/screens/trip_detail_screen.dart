@@ -255,7 +255,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                 label: Text('Edit Expenses',
                                     style: AppType.body(15, weight: FontWeight.w700)),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0B1638),
+                                  backgroundColor: const Color(0xFF7A2800),
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                                   elevation: 0,

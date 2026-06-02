@@ -433,7 +433,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
             child: ElevatedButton(
               onPressed: _isSubmitting ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0B1638),
+                backgroundColor: const Color(0xFF7A2800),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),

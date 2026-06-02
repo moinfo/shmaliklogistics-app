@@ -292,7 +292,7 @@ class _DrawerHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0B1638), Color(0xFF1D4ED8), Color(0xFF0B1638)],
+          colors: [Color(0xFF7A2800), Color(0xFFEA580C), Color(0xFF7A2800)],
           stops: [0.0, 0.6, 1.0],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'typography.dart';
@@ -14,15 +16,126 @@ import '../utils/colors.dart';
 /// Per-module accent gradients. Keeps Ops/Finance/HR/Customer visually distinct
 /// but harmonious. Use [.colors] for gradients and [.base] for solid accents.
 enum ModuleAccent {
-  ops([Color(0xFF1565C0), Color(0xFF0288D1)]),
+  ops([Color(0xFFEA580C), Color(0xFFC2410C)]),
   finance([Color(0xFF0E9F6E), Color(0xFF22C55E)]),
   hr([Color(0xFF6D28D9), Color(0xFF8B5CF6)]),
-  brand([Color(0xFF0B1638), Color(0xFF1D4ED8)]),
+  brand([Color(0xFF7A2800), Color(0xFFEA580C)]),
   danger([Color(0xFFDC2626), Color(0xFFF97316)]);
 
   const ModuleAccent(this.colors);
   final List<Color> colors;
   Color get base => colors.first;
+}
+
+// ── macOS-Tahoe "Liquid Glass" primitive ───────────────────────────────────
+
+/// One place to dial in the Liquid-Glass feel app-wide. Raise [blurSigma] for
+/// a heavier frost; raise tint alphas for more opacity (less background bleed).
+/// The 1px top highlight is what sells the "polished glass edge" illusion.
+class GlassTokens {
+  GlassTokens._();
+  // Cards use a lighter blur than full sheets so scroll perf stays clean
+  // (one save-layer per visible card).
+  static const double blurSigmaCard  = 18;
+  static const double blurSigmaSheet = 28;
+  static const double blurSigmaBar   = 24;
+
+  // Glass body colors — pulled from the WEB palette so light/dark mode read as
+  // the same brand on phone and browser.
+  //   • Light: a cool sky-white (sits on white bodies as a near-neutral glass,
+  //     picks up subtle blue when overlapping the navy AppGradientHeader).
+  //   • Dark : the web's `dk.card` color `#0F1E32` — the same navy used by web
+  //     card surfaces in dark mode (see resources/js/pages/system/Trips/Show.jsx).
+  static const Color tintLight = Color(0xFFF1F5FB);
+  static const Color tintDark  = Color(0xFF1E0800);
+
+  // Tint gradient alphas (top→bottom). Tahoe runs a slightly brighter top edge.
+  // Dark-mode alphas are higher than light-mode because a tinted dark color
+  // needs more opacity to read at the same visual weight as a white tint.
+  static const double tintLightTopAlpha = 0.78;
+  static const double tintLightBotAlpha = 0.60;
+  static const double tintDarkTopAlpha  = 0.55;
+  static const double tintDarkBotAlpha  = 0.32;
+
+  // 1px top specular highlight — STAYS near-white in both modes because polished
+  // glass edges reflect ambient light regardless of substrate (Tahoe convention).
+  static const double highlightLightAlpha = 0.60;
+  static const double highlightDarkAlpha  = 0.32;
+
+  // Outer hairline border.
+  static const double borderLightAlpha = 0.35;
+  static const double borderDarkAlpha  = 0.20;
+}
+
+/// macOS Tahoe-style frosted glass surface. Samples whatever is painted behind
+/// it (in the same Stack/parent) and frosts it, then layers a top-bright tint
+/// gradient with a 1px white specular highlight at the top edge so it reads as
+/// a polished piece of glass rather than a translucent PNG.
+///
+/// Always wraps its child in a [ClipRRect] so the blur respects rounded corners.
+class LiquidGlass extends StatelessWidget {
+  final Widget child;
+  final BorderRadius radius;
+  final EdgeInsetsGeometry? padding;
+
+  /// Override the blur intensity (defaults to [GlassTokens.blurSigmaCard]).
+  /// Use [GlassTokens.blurSigmaSheet] for hero sheets, [GlassTokens.blurSigmaBar]
+  /// for floating bars, or a custom value.
+  final double? sigma;
+
+  const LiquidGlass({
+    super.key,
+    required this.child,
+    this.radius = const BorderRadius.all(Radius.circular(18)),
+    this.padding,
+    this.sigma,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tintColor = isDark ? GlassTokens.tintDark : GlassTokens.tintLight;
+    final topA = isDark ? GlassTokens.tintDarkTopAlpha : GlassTokens.tintLightTopAlpha;
+    final botA = isDark ? GlassTokens.tintDarkBotAlpha : GlassTokens.tintLightBotAlpha;
+    // Highlight + border stay white — polished glass edges read as white
+    // regardless of the body's tint.
+    final highlight = Colors.white.withValues(
+      alpha: isDark ? GlassTokens.highlightDarkAlpha : GlassTokens.highlightLightAlpha,
+    );
+    final border = Colors.white.withValues(
+      alpha: isDark ? GlassTokens.borderDarkAlpha : GlassTokens.borderLightAlpha,
+    );
+    final s = sigma ?? GlassTokens.blurSigmaCard;
+
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: s, sigmaY: s),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                tintColor.withValues(alpha: topA),
+                tintColor.withValues(alpha: botA),
+              ],
+            ),
+            border: Border.all(color: border, width: 0.5),
+          ),
+          // Top specular highlight painted ABOVE the child so it catches the
+          // glass edge the way Tahoe surfaces catch light.
+          foregroundDecoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border(top: BorderSide(color: highlight, width: 1)),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
 }
 
 // ── Shell chrome inset ──────────────────────────────────────────────────────
@@ -70,7 +183,7 @@ class AppGradientHeader extends StatelessWidget {
     this.eyebrow,
     this.trailing,
     this.actions = const [],
-    this.gradient = const [Color(0xFF0B1638), Color(0xFF1D4ED8)],
+    this.gradient = const [Color(0xFF7A2800), Color(0xFFEA580C)],
     this.padding = const EdgeInsets.fromLTRB(20, 18, 14, 24),
     this.leading,
     this.footer,
@@ -86,7 +199,7 @@ class AppGradientHeader extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [gradient.first, gradient.last, const Color(0xFF0B1638)],
+            colors: [gradient.first, gradient.last, const Color(0xFF7A2800)],
             stops: const [0.0, 0.6, 1.0],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -263,70 +376,75 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final highlight = danger && value.trim() != '0' && value.trim().isNotEmpty;
     final chip = highlight ? ModuleAccent.danger : accent;
-    return Material(
-      color: AppColors.surface(context),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface(context),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.border(context)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+    final radius = BorderRadius.circular(20);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        ],
+      ),
+      child: LiquidGlass(
+        radius: radius,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: radius,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: chip.colors,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: chip.colors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: chip.base.withValues(alpha: 0.38),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(icon, size: 20, color: Colors.white),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: chip.base.withValues(alpha: 0.38),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                      if (highlight) ...[
+                        const Spacer(),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(color: kDanger, shape: BoxShape.circle),
                         ),
                       ],
-                    ),
-                    child: Icon(icon, size: 20, color: Colors.white),
+                    ],
                   ),
-                  if (highlight) ...[
-                    const Spacer(),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(color: kDanger, shape: BoxShape.circle),
-                    ),
-                  ],
+                  const SizedBox(height: 16),
+                  Text(
+                    value,
+                    style: AppType.number(27,
+                        color: highlight ? kDanger : AppColors.textNavy(context)),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(label, style: AppType.body(12.5, color: kMuted, weight: FontWeight.w600)),
                 ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                value,
-                style: AppType.number(27,
-                    color: highlight ? kDanger : AppColors.textNavy(context)),
-              ),
-              const SizedBox(height: 3),
-              Text(label, style: AppType.body(12.5, color: kMuted, weight: FontWeight.w600)),
-            ],
+            ),
           ),
         ),
       ),
@@ -418,27 +536,26 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface(context),
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: AppColors.surface(context),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.border(context)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
-              ),
-            ],
+    final radius = BorderRadius.circular(18);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
+        ],
+      ),
+      child: LiquidGlass(
+        radius: radius,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: radius,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: onTap,
             child: IntrinsicHeight(
               child: Row(
                 children: [

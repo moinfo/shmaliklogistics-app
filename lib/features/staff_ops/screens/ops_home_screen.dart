@@ -432,7 +432,7 @@ class _SectionChip extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: selected
               ? const LinearGradient(
-                  colors: [Color(0xFF1565C0), Color(0xFF0288D1)],
+                  colors: [Color(0xFFEA580C), Color(0xFFC2410C)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
