@@ -245,23 +245,30 @@ class _LoginScreenState extends State<LoginScreen>
 
           // Content
           SafeArea(
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: SizedBox(
-                height: size.height - MediaQuery.of(context).padding.top,
-                child: Column(
-                  children: [
-                    const Spacer(flex: 2),
-                    _buildLogoSection(),
-                    const Spacer(flex: 3),
-                    FadeTransition(
-                      opacity: _fadeAnim,
-                      child: SlideTransition(
-                        position: _slideAnim,
-                        child: _buildFormSheet(),
-                      ),
+            // Fills the screen when there's room; once the keyboard shrinks the
+            // viewport the content keeps its natural height and scrolls.
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const Spacer(flex: 2),
+                        _buildLogoSection(),
+                        const Spacer(flex: 3),
+                        FadeTransition(
+                          opacity: _fadeAnim,
+                          child: SlideTransition(
+                            position: _slideAnim,
+                            child: _buildFormSheet(),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
