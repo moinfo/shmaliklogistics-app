@@ -208,6 +208,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
@@ -249,16 +250,21 @@ class _LoginScreenState extends State<LoginScreen>
             // viewport the content keeps its natural height and scrolls.
             child: LayoutBuilder(
               builder: (context, constraints) => SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
+                // Compact layout fits the screen, so no scrolling is needed; the
+                // keyboard case collapses the logo/footer instead (see below).
+                physics: const NeverScrollableScrollPhysics(),
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
-                        const Spacer(flex: 2),
-                        _buildLogoSection(),
-                        const Spacer(flex: 3),
+                        if (!keyboardOpen) ...[
+                          const Spacer(flex: 2),
+                          _buildLogoSection(),
+                          const Spacer(flex: 3),
+                        ] else
+                          const Spacer(),
                         FadeTransition(
                           opacity: _fadeAnim,
                           child: SlideTransition(
@@ -366,6 +372,7 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildFormSheet() {
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface(context),
@@ -374,7 +381,7 @@ class _LoginScreenState extends State<LoginScreen>
           topRight: Radius.circular(32),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(28, 36, 28, 40),
+      padding: const EdgeInsets.fromLTRB(28, 24, 28, 16),
       child: Form(
         key: _formKey,
         child: Column(
@@ -385,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen>
               child: Container(
                 width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 28),
+                margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: AppColors.border(context),
                   borderRadius: BorderRadius.circular(2),
@@ -402,7 +409,7 @@ class _LoginScreenState extends State<LoginScreen>
               'Sign in to your account',
               style: AppType.body(14, color: kMuted),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
 
             _buildField(
               controller: _loginController,
@@ -414,7 +421,7 @@ class _LoginScreenState extends State<LoginScreen>
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Required' : null,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             _buildField(
               controller: _passwordController,
@@ -444,11 +451,12 @@ class _LoginScreenState extends State<LoginScreen>
               _buildError(),
             ],
 
-            const SizedBox(height: 28),
-            _buildButton(),
-            if (_biometricReady) _buildBiometricSection(),
-            const SizedBox(height: 28),
-            _buildFooter(),
+            const SizedBox(height: 20),
+            _buildActionRow(),
+            if (!keyboardOpen) ...[
+              const SizedBox(height: 16),
+              _buildFooter(),
+            ],
           ],
         ),
       ),
@@ -507,52 +515,6 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       ),
       validator: validator,
-    );
-  }
-
-  Widget _buildBiometricSection() {
-    return Column(
-      children: [
-        const SizedBox(height: 22),
-        Row(
-          children: [
-            Expanded(child: Divider(color: AppColors.border(context))),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text('or', style: AppType.body(12.5, color: kMuted)),
-            ),
-            Expanded(child: Divider(color: AppColors.border(context))),
-          ],
-        ),
-        const SizedBox(height: 18),
-        InkWell(
-          onTap: _isLoading ? null : _biometricLogin,
-          borderRadius: BorderRadius.circular(40),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 62,
-                  height: 62,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: kPrimary.withValues(alpha: 0.10),
-                    border: Border.all(color: kPrimary.withValues(alpha: 0.30), width: 1.5),
-                  ),
-                  child: Icon(_biometricIcon, size: 31, color: kPrimary),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _biometricLabel,
-                  style: AppType.body(13, color: kPrimary, weight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -634,6 +596,65 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ],
         ),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFFF59E0B)),
+            const SizedBox(width: 4),
+            Text.rich(
+              TextSpan(
+                text: 'Powered by ',
+                style: AppType.body(
+                  11.5,
+                  color: kMuted.withValues(alpha: 0.8),
+                  weight: FontWeight.w500,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Moinfotech',
+                    style: AppType.body(
+                      11.5,
+                      color: kAccent,
+                      weight: FontWeight.w800,
+                    ).copyWith(letterSpacing: 0.3),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Sign In button with the fingerprint / Face ID button merged on its right.
+  Widget _buildActionRow() {
+    return Row(
+      children: [
+        Expanded(child: _buildButton()),
+        if (_biometricReady) ...[
+          const SizedBox(width: 12),
+          Tooltip(
+            message: _biometricLabel,
+            child: SizedBox(
+              width: 54,
+              height: 54,
+              child: OutlinedButton(
+                onPressed: _isLoading ? null : _biometricLogin,
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  backgroundColor: kPrimary.withValues(alpha: 0.12),
+                  side: BorderSide(color: kPrimary.withValues(alpha: 0.45), width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Icon(_biometricIcon, size: 28, color: kPrimary),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

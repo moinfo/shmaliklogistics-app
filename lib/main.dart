@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'core/api/api_client.dart';
 import 'core/services/auth_storage.dart';
 import 'core/utils/app_theme.dart';
+import 'core/utils/secret_tap.dart';
 import 'core/utils/theme_notifier.dart';
 import 'core/widgets/app_shell.dart';
 import 'features/auth/auth_service.dart';
@@ -50,6 +51,7 @@ class _ShMalikAppState extends State<ShMalikApp> {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: mode,
+        builder: (context, child) => SecretTapDetector(child: child!),
         initialRoute: '/',
         routes: {
           '/':                  (_) => SplashScreen(authStorage: _authStorage),
