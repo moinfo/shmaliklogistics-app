@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../core/ui/typography.dart';
+import '../../../core/ui/ui_kit.dart';
 import '../../../core/utils/colors.dart';
 
 /// First screen for a signed-out visitor: the live marketing site in a web
@@ -22,6 +23,7 @@ class _LandingScreenState extends State<LandingScreen> {
   late final WebViewController _controller;
   int _progress = 0;
   String? _error;
+  String _lang = 'en';
 
   @override
   void initState() {
@@ -42,7 +44,14 @@ class _LandingScreenState extends State<LandingScreen> {
           return NavigationDecision.navigate;
         },
         onProgress: (p) => setState(() => _progress = p),
-        onPageStarted: (_) => setState(() => _error = null),
+        onPageStarted: (_) {
+          setState(() => _error = null);
+          _hideSiteChrome();
+        },
+        onPageFinished: (_) {
+          _hideSiteChrome();
+          _syncLanguage();
+        },
         onWebResourceError: (e) {
           if (e.isForMainFrame ?? true) setState(() => _error = e.description);
         },
@@ -50,9 +59,56 @@ class _LandingScreenState extends State<LandingScreen> {
       ..loadRequest(Uri.parse(LandingScreen.url));
   }
 
-  void _goHome() {
+  /// The app's top menu replaces the site's header (language, theme, menu), so
+  /// hide it. It stays in the page (invisible, not removed) so the top-bar
+  /// language and theme buttons can still drive the site's own controls.
+  void _hideSiteChrome() {
+    _controller.runJavaScript(
+      "(function(){var id='app-chrome-style';if(document.getElementById(id))return;"
+      "var s=document.createElement('style');s.id=id;"
+      "s.textContent='header.mantine-AppShell-header{visibility:hidden!important;pointer-events:none!important}"
+      "nav.mantine-AppShell-navbar{display:none!important}"
+      ".mantine-AppShell-main{padding-top:0!important}';"
+      "(document.head||document.documentElement).appendChild(s);})();",
+    );
+  }
+
+  /// The site remembers its language, so read it back to keep the EN/SW pill
+  /// in step (the active button in the site's own toggle has a filled background).
+  Future<void> _syncLanguage() async {
+    try {
+      final r = await _controller.runJavaScriptReturningResult(
+        "(function(){var b=[].slice.call(document.querySelectorAll('header button'))"
+        ".filter(function(x){var t=x.textContent.trim().toLowerCase();return t==='en'||t==='sw'});"
+        "for(var i=0;i<b.length;i++){var c=getComputedStyle(b[i]).backgroundColor;"
+        "if(c&&c!=='rgba(0, 0, 0, 0)'&&c!=='transparent')return b[i].textContent.trim().toLowerCase();}return '';})()",
+      );
+      final code = r.toString().replaceAll('"', '');
+      if (mounted && (code == 'en' || code == 'sw') && code != _lang) {
+        setState(() => _lang = code);
+      }
+    } catch (_) {}
+  }
+
+  void _openPage(String path) {
     Navigator.of(context).pop(); // close drawer
-    _controller.loadRequest(Uri.parse(LandingScreen.url));
+    _controller.loadRequest(Uri.parse('${LandingScreen.url}$path'));
+  }
+
+  void _setLanguage(String code) {
+    setState(() => _lang = code);
+    _controller.runJavaScript(
+      "(function(l){var b=[].slice.call(document.querySelectorAll('header button'))"
+      ".filter(function(x){return x.getClientRects().length>0&&x.textContent.trim().toLowerCase()===l});"
+      "if(b[0])b[0].click();})('$code');",
+    );
+  }
+
+  void _toggleTheme() {
+    _controller.runJavaScript(
+      "(function(){var a=[].slice.call(document.querySelectorAll('header .mantine-ActionIcon-root'))"
+      ".filter(function(x){return x.getClientRects().length>0});if(a[0])a[0].click();})();",
+    );
   }
 
   void _goLogin() {
@@ -100,6 +156,12 @@ class _LandingScreenState extends State<LandingScreen> {
             ],
           ),
           actions: [
+            _langPill(),
+            IconButton(
+              icon: const Icon(Icons.brightness_6_rounded, color: Colors.white),
+              tooltip: 'Light / Dark',
+              onPressed: _toggleTheme,
+            ),
             IconButton(
               icon: const Icon(Icons.menu_rounded, color: Colors.white),
               tooltip: 'Menu',
@@ -144,51 +206,98 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _buildDrawer() {
+    final top = MediaQuery.of(context).padding.top + 52;
+    // Transparent drawer shell: only the card below is drawn, sized to its
+    // menu items and aligned under the app bar, so it doesn't run to the bottom.
     return Drawer(
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(gradient: kBarGradient),
-            padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).padding.top + 24, 20, 24),
-            child: Row(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      width: 280,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: EdgeInsets.only(top: top, right: 8, left: 8),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            // Backdrop is only the card's background; the menu items define
+            // its height, so the card ends right after Login.
+            child: Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset('assets/images/logo.png',
-                      width: 52, height: 52, fit: BoxFit.cover),
+                const Positioned.fill(child: CommandBackdrop(child: SizedBox())),
+                Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _navTile(Icons.home_rounded, 'Home', () => _openPage('/')),
+                    _navTile(Icons.local_shipping_rounded, 'Services', () => _openPage('/services')),
+                    _navTile(Icons.info_outline_rounded, 'About', () => _openPage('/about')),
+                    _navTile(Icons.mail_outline_rounded, 'Contact', () => _openPage('/contact')),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: FilledButton.icon(
+                          onPressed: _goLogin,
+                          icon: const Icon(Icons.login_rounded),
+                          label: Text('Login',
+                              style: AppType.body(16, color: Colors.white, weight: FontWeight.w700)),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFFC73A3A),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('SH MALIK',
-                          style: AppType.display(18, color: Colors.white)),
-                      const SizedBox(height: 2),
-                      Text('Logistics Portal',
-                          style: AppType.body(12.5,
-                              color: Colors.white.withValues(alpha: 0.75))),
-                    ],
-                  ),
-                ),
+              ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.home_rounded, color: kPrimary),
-            title: Text('Home', style: AppType.body(15, weight: FontWeight.w600)),
-            onTap: _goHome,
-          ),
-          ListTile(
-            leading: const Icon(Icons.login_rounded, color: kPrimary),
-            title: Text('Login', style: AppType.body(15, weight: FontWeight.w600)),
-            onTap: _goLogin,
-          ),
-        ],
+        ),
       ),
     );
   }
+
+  /// EN / SW switch in the app bar, styled like the site's own toggle.
+  Widget _langPill() {
+    Widget seg(String code) {
+      final on = _lang == code;
+      return GestureDetector(
+        onTap: () => _setLanguage(code),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: on ? const Color(0xFFC73A3A) : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Text(code.toUpperCase(),
+              style: AppType.body(12,
+                  color: on ? Colors.white : Colors.white.withValues(alpha: 0.7),
+                  weight: FontWeight.w800)),
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(right: 4),
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [seg('en'), seg('sw')]),
+    );
+  }
+
+  Widget _navTile(IconData icon, String label, VoidCallback onTap) => ListTile(
+        dense: true,
+        leading: Icon(icon, color: Colors.white.withValues(alpha: 0.9)),
+        title: Text(label,
+            style: AppType.body(15.5, color: Colors.white, weight: FontWeight.w600)),
+        onTap: onTap,
+      );
 }
