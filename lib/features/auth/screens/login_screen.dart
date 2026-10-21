@@ -596,7 +596,17 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 4),
+        Center(
+          child: TextButton.icon(
+            onPressed: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/landing', (r) => false),
+            icon: const Icon(Icons.arrow_back_rounded, size: 18, color: kPrimary),
+            label: Text('Back to home',
+                style: AppType.body(13.5, color: kPrimary, weight: FontWeight.w700)),
+          ),
+        ),
+        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

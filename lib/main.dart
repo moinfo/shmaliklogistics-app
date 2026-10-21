@@ -8,6 +8,7 @@ import 'core/widgets/app_shell.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/splash_screen.dart';
+import 'features/landing/screens/landing_screen.dart';
 import 'features/dashboard/screens/dashboard_screen.dart';
 import 'features/trips/screens/trips_screen.dart';
 import 'features/check_in/screens/check_in_screen.dart';
@@ -55,6 +56,7 @@ class _ShMalikAppState extends State<ShMalikApp> {
         initialRoute: '/',
         routes: {
           '/':                  (_) => SplashScreen(authStorage: _authStorage),
+          '/landing':           (_) => const LandingScreen(),
           '/login':             (_) => LoginScreen(authService: _authService),
           '/home':              (_) => AppShell(apiClient: _apiClient),
           '/dashboard':         (_) => const DashboardScreen(),

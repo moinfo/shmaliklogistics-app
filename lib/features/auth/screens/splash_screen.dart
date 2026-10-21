@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (!hasToken) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/landing');
       return;
     }
 
