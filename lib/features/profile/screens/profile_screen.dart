@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 64,
             height: 64,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _initialsCircle(initials),
+            errorBuilder: (_, _, _) => _initialsCircle(initials),
           ),
         ),
       );
@@ -297,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       itemCount: sections.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      separatorBuilder: (_, _) => const SizedBox(height: 16),
       itemBuilder: (_, i) => RevealOnLoad(
         delayMs: (i * 60).clamp(0, 300),
         child: sections[i],
@@ -527,7 +527,7 @@ class _AppearanceRow extends StatelessWidget {
           ),
           ValueListenableBuilder<ThemeMode>(
             valueListenable: themeNotifier,
-            builder: (_, mode, __) => Switch(
+            builder: (_, mode, _) => Switch(
               value: mode == ThemeMode.dark,
               activeThumbColor: kPrimary,
               onChanged: (_) => toggleTheme(),

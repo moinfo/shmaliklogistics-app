@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../ui/typography.dart';
-import '../utils/app_theme.dart';
 import '../utils/colors.dart';
 
 /// One destination in the [CommandNavBar].
@@ -34,18 +33,14 @@ class CommandNavBar extends StatelessWidget {
     required this.onSelect,
   });
 
-  /// Brand gradient, shared with the command header.
-  static const List<Color> _gradient = [Color(0xFF0B1638), Color(0xFF1D4ED8)];
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.navBar(context),
-        border: Border(top: BorderSide(color: AppColors.border(context))),
+        gradient: kBarGradient,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
+            color: Colors.black.withValues(alpha: 0.18),
             blurRadius: 24,
             offset: const Offset(0, -6),
           ),
@@ -54,8 +49,9 @@ class CommandNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
+          padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               for (var i = 0; i < items.length; i++)
                 Expanded(
@@ -82,7 +78,6 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedLabel = AppColors.textNavy(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -92,34 +87,20 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 260),
+            AnimatedContainer(              duration: const Duration(milliseconds: 260),
               curve: Curves.easeOutCubic,
               padding: EdgeInsets.symmetric(horizontal: selected ? 18 : 12, vertical: 6),
               decoration: BoxDecoration(
-                gradient: selected
-                    ? const LinearGradient(
-                        colors: CommandNavBar._gradient,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : null,
+                color: selected ? Colors.white.withValues(alpha: 0.2) : null,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: selected
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFF1D4ED8).withValues(alpha: 0.34),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : null,
               ),
               child: Icon(
                 selected ? item.selectedIcon : item.icon,
                 size: 22,
-                color: selected ? Colors.white : kMuted,
+                color: selected ? Colors.white : Colors.white.withValues(alpha: 0.65),
               ),
             ),
             const SizedBox(height: 5),
@@ -128,7 +109,7 @@ class _NavItem extends StatelessWidget {
               style: AppType.body(
                 11.5,
                 weight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? selectedLabel : kMuted,
+                color: selected ? Colors.white : Colors.white.withValues(alpha: 0.65),
               ),
               child: Text(item.label, maxLines: 1, overflow: TextOverflow.ellipsis),
             ),

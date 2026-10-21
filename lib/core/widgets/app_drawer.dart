@@ -158,6 +158,7 @@ const List<_MenuItem> _staffMenu = [
   ),
 
   _MenuItem(label: 'Notifications', icon: Icons.notifications_rounded),
+  _MenuItem(label: 'Live Website', icon: Icons.public_rounded),
 ];
 
 /// Customer menu — always visible to a signed-in customer (no perm gating).
@@ -168,6 +169,7 @@ const List<_MenuItem> _customerMenu = [
   _MenuItem(label: 'Invoices', icon: Icons.receipt_long_rounded, shellTab: 'Home'),
   _MenuItem(label: 'Cargo', icon: Icons.inventory_2_rounded, shellTab: 'Home'),
   _MenuItem(label: 'Quote Requests', icon: Icons.request_quote_rounded, shellTab: 'Home'),
+  _MenuItem(label: 'Live Website', icon: Icons.public_rounded),
 ];
 
 /// Full navigation drawer mirroring the web sidebar, permission-filtered.
@@ -250,7 +252,9 @@ class AppDrawer extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
+              // Clear the phone's system navigation bar so the last items stay reachable.
+              padding: EdgeInsets.fromLTRB(
+                  8, 4, 8, 16 + MediaQuery.of(context).viewPadding.bottom),
               children: [
                 for (final item in items)
                   if (item.isGroup)

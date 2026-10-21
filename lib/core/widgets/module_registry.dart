@@ -26,11 +26,31 @@ import '../../features/mod_re_tenants/screens/tenants_screen.dart';
 import '../../features/mod_re_leases/screens/leases_screen.dart';
 import '../../features/mod_re_rent/screens/rent_screen.dart';
 import '../../features/mod_re_expenses/screens/expenses_screen.dart';
+import '../../features/website/screens/website_screen.dart';
 
 /// Maps a navigation-drawer menu label to the built mobile screen for that
 /// module. Labels absent here fall back to the `ModulePlaceholderScreen`, so
 /// the full permitted menu stays navigable while modules are still being built.
 final Map<String, Widget Function(ApiClient)> kModuleScreens = {
+  'Live Website': (api) => const WebsiteScreen(),
+  // Modules served by the live web portal (signed in once inside the webview)
+  'Debtors': (api) => const WebsiteScreen(path: 'system/billing/debtors'),
+  'Debtors / AR': (api) => const WebsiteScreen(path: 'system/billing/debtors'),
+  'Allowances': (api) => const WebsiteScreen(path: 'system/hr/allowances'),
+  'Bonus': (api) => const WebsiteScreen(path: 'system/hr/bonus'),
+  'Attendance': (api) => const WebsiteScreen(path: 'system/hr/attendance'),
+  'Salary Slip': (api) => const WebsiteScreen(path: 'system/hr/salary-slips'),
+  'Company Settings': (api) => const WebsiteScreen(path: 'system/settings/company'),
+  'Licence Classes': (api) => const WebsiteScreen(path: 'system/settings/license-classes'),
+  'Document Types': (api) => const WebsiteScreen(path: 'system/settings/document-types'),
+  'Payroll Settings': (api) => const WebsiteScreen(path: 'system/settings/payroll'),
+  'Deductions': (api) => const WebsiteScreen(path: 'system/settings/deductions'),
+  'Deduction Subscriptions': (api) => const WebsiteScreen(path: 'system/settings/deduction-subscriptions'),
+  'Staff Bank Details': (api) => const WebsiteScreen(path: 'system/settings/bank-details'),
+  'Departments': (api) => const WebsiteScreen(path: 'system/settings/departments'),
+  'Roles & Permissions': (api) => const WebsiteScreen(path: 'system/settings/roles'),
+  'Users': (api) => const WebsiteScreen(path: 'system/settings/users'),
+  'Notifications': (api) => const WebsiteScreen(path: 'system/notifications'),
   // Operations & fleet
   'All Vehicles': (api) => VehiclesScreen(apiClient: api),
   'Drivers': (api) => DriversScreen(apiClient: api),

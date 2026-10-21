@@ -37,6 +37,10 @@ class ShellChrome extends InheritedWidget {
   final double topInset;
   const ShellChrome({super.key, required this.topInset, required super.child});
 
+  /// True when drawn inside the shell (which supplies its own top bar).
+  static bool existsIn(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ShellChrome>() != null;
+
   static double topInsetOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ShellChrome>()?.topInset ?? 0;
 
@@ -81,6 +85,9 @@ class AppGradientHeader extends StatelessWidget {
     // Extra top padding so header content clears the shell's floating app bar
     // (0 when there is no shell above, e.g. on pushed detail screens).
     final extraTop = ShellChrome.topInsetOf(context);
+    // Pushed detail screens live above the shell, so give them the same brand
+    // bar (back arrow + logo + title) the shell shows on every tab and module.
+    final showBar = !ShellChrome.existsIn(context) && Navigator.of(context).canPop();
     return ClipRRect(
       borderRadius: BorderRadius.zero,
       child: DecoratedBox(
@@ -123,12 +130,36 @@ class AppGradientHeader extends StatelessWidget {
             ),
             SafeArea(
               bottom: false,
-              child: Padding(
-                // Under the shell, the app-bar inset replaces (not adds to) the
-                // default top padding, so the content tucks just under the
-                // floating bar instead of leaving a tall empty band.
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (showBar)
+                    SizedBox(
+                      height: 52,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                            tooltip: 'Back',
+                            onPressed: () => Navigator.of(context).maybePop(),
+                          ),
+                          Image.asset('assets/images/logo.png', height: 26, fit: BoxFit.contain),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(eyebrow ?? title,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppType.display(16, color: Colors.white, letterSpacing: 0.2)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  Padding(
                 padding: padding.copyWith(
-                    top: extraTop > 0 ? extraTop : padding.top),
+                    top: showBar
+                        ? 8
+                        : (extraTop > 0
+                            ? extraTop
+                            : (ShellChrome.existsIn(context) ? 10 : padding.top))),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -167,14 +198,66 @@ class AppGradientHeader extends StatelessWidget {
                         ],
                       ),
                     ),
-                    ...actions,
+                    // The brand bar already has a back arrow, so drop the legacy
+                    // back button some detail screens add as a header action.
+                    ...actions.where((w) =>
+                        !(showBar &&
+                            w is HeaderIconButton &&
+                            w.icon == Icons.arrow_back_rounded)),
                     ?trailing,
                   ],
                 ),
               ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Full-area version of the command header's backdrop (gradient, blueprint
+/// grid, radar rings and light bloom) for splash/auth screens.
+class CommandBackdrop extends StatelessWidget {
+  final Widget child;
+  const CommandBackdrop({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    const gradient = [Color(0xFF0B1638), Color(0xFF1D4ED8)];
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF0B1638), Color(0xFF1D4ED8), Color(0xFF0B1638)],
+          stops: [0.0, 0.6, 1.0],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(painter: _CommandTexturePainter(gradient.last)),
+          ),
+          Positioned(
+            top: -50,
+            right: -30,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [
+                  Colors.white.withValues(alpha: 0.14),
+                  Colors.white.withValues(alpha: 0.0),
+                ]),
+              ),
+            ),
+          ),
+          Positioned.fill(child: child),
+        ],
       ),
     );
   }

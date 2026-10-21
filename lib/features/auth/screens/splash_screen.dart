@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/auth/app_session.dart';
 import '../../../core/services/auth_storage.dart';
 import '../../../core/ui/typography.dart';
-import '../../../core/utils/colors.dart';
+import '../../../core/ui/ui_kit.dart';
 
 class SplashScreen extends StatefulWidget {
   final AuthStorage authStorage;
@@ -74,36 +75,35 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kPrimary,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.local_shipping_rounded,
-                    size: 52,
-                    color: kPrimary,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+      backgroundColor: const Color(0xFF0B1638),
+      body: CommandBackdrop(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Same logo as the launcher icon.
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 28,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: Image.asset('assets/images/logo.png',
+                        width: 112, height: 112, fit: BoxFit.cover),
                   ),
                 ),
-              ),
               const SizedBox(height: 28),
               Text(
                 'SH MALIK LOGISTICS',
@@ -129,9 +129,11 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         ),
+      ),
       ),
     );
   }

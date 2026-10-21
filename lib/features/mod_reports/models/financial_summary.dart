@@ -2,6 +2,7 @@
 ///
 /// Mirrors `GET /staff/modules/reports/financial-summary` →
 /// `{ "report": { ...totals, "rows": [ per-month ] } }`.
+library;
 
 double _d(dynamic v) => double.tryParse(v.toString()) ?? 0;
 int _i(dynamic v) => int.tryParse(v.toString()) ?? 0;

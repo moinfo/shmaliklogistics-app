@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../services/auth_storage.dart';
@@ -17,8 +16,11 @@ class ApiClient {
   static const String _liveUrl  = 'https://shmaliklogistics.co.tz/api';
   static const String _localUrl = 'http://127.0.0.1:8000/api';
 
-  // Release builds → live server. Debug/profile → local server.
-  static String get baseUrl => kReleaseMode ? _liveUrl : _localUrl;
+  // Live server by default. For a local backend run with
+  // `--dart-define=USE_LOCAL_API=true` (127.0.0.1 only works on an emulator
+  // or with `adb reverse tcp:8000 tcp:8000`).
+  static const bool _useLocal = bool.fromEnvironment('USE_LOCAL_API');
+  static String get baseUrl => _useLocal ? _localUrl : _liveUrl;
 
   // Base URL without /api — used to construct storage file URLs.
   static String get storageUrl => baseUrl.replaceAll('/api', '');

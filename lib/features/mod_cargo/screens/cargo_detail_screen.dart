@@ -1,3 +1,9 @@
+/**
+ * @author Firstname Lastname <firstname.lastname@example.com>
+ * @file Description
+ * @desc Created on 2026-10-21 3:07:18 pm
+ * @copyright GNU General Public License v3.0
+ */
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/typography.dart';

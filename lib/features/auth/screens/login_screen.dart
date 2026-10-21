@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen>
             _buildField(
               controller: _loginController,
               label: 'Email or Card ID',
-              hint: 'e.g. juma@shmalik.co.tz',
+              hint: 'msembe@shmaliklogistics.co.tz',
               icon: Icons.badge_outlined,
               keyboardType: TextInputType.emailAddress,
               action: TextInputAction.next,

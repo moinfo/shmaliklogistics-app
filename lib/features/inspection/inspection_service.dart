@@ -31,11 +31,11 @@ class InspectionService {
       'inspection_type': inspectionType,
       'overall_status': overallStatus,
       'items': items.map((i) => i.toJson()).toList(),
-      if (tripId != null) 'trip_id': tripId,
-      if (odometerKm != null) 'odometer_km': odometerKm,
-      if (location != null) 'location': location,
-      if (lat != null) 'lat': lat,
-      if (lng != null) 'lng': lng,
+      'trip_id': ?tripId,
+      'odometer_km': ?odometerKm,
+      'location': ?location,
+      'lat': ?lat,
+      'lng': ?lng,
       if (notes != null && notes.isNotEmpty) 'notes': notes,
     };
 

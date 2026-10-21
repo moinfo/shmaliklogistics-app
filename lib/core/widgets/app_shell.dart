@@ -121,8 +121,6 @@ class _AppShellState extends State<AppShell> {
       },
       child: Scaffold(
         backgroundColor: AppColors.surfaceVariant(context),
-        // The transparent app bar floats over the screen's gradient header.
-        extendBodyBehindAppBar: true,
         // Slim branded bar: hamburger on a tab, back arrow inside a module.
         // Feature screens render their own AppGradientHeader below.
         appBar: PreferredSize(
@@ -132,10 +130,12 @@ class _AppShellState extends State<AppShell> {
               toolbarHeight: 52,
               elevation: 0,
               scrolledUnderElevation: 0,
-              // Transparent + floating: the screen's AppGradientHeader draws
-              // its gradient behind this bar (see extendBodyBehindAppBar), so
-              // the bar and header read as one seamless surface.
+              // Solid brand bar, identical on every tab, module and sub-screen
+              // (the bottom nav uses the same gradient).
               backgroundColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(gradient: kBarGradient),
+              ),
               systemOverlayStyle: SystemUiOverlayStyle.light,
               leading: inModule
                   ? IconButton(
@@ -181,10 +181,10 @@ class _AppShellState extends State<AppShell> {
           onOpenModule: _openModule,
         ),
         // Tabs stay mounted underneath; a module screen overlays them so the
-        // bottom nav and top bar persist. ShellChrome tells the screens' headers
-        // to leave 52px for the floating app bar so the gradient runs behind it.
+        // bottom nav and top bar persist. The bar is opaque, so headers need no
+        // extra inset.
         body: ShellChrome(
-          topInset: 8,
+          topInset: 0,
           child: Stack(
             children: [
               IndexedStack(

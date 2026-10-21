@@ -24,3 +24,11 @@ Color statusColor(String status) {
     default:           return const Color(0xFF94A3B8);
   }
 }
+
+/// Brand gradient shared by the shell's top app bar and bottom navigation so
+/// both read as one chrome on every screen and sub-screen.
+const kBarGradient = LinearGradient(
+  colors: [Color(0xFF0B1638), Color(0xFF1D4ED8)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);

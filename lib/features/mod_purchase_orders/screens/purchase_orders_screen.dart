@@ -200,7 +200,7 @@ class _PurchaseOrdersScreenState extends State<PurchaseOrdersScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         itemCount: _statusOptions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final (value, label) = _statusOptions[i];
           final selected = _statusFilter == value;

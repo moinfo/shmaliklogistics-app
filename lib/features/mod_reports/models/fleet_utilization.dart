@@ -2,6 +2,7 @@
 ///
 /// Mirrors `GET /staff/modules/reports/fleet-utilization` →
 /// `{ "report": { ...summary, "rows": [ per-vehicle ] } }`.
+library;
 
 double _d(dynamic v) => double.tryParse(v.toString()) ?? 0;
 int _i(dynamic v) => int.tryParse(v.toString()) ?? 0;

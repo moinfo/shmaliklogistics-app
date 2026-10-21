@@ -7,7 +7,7 @@ import '../../../core/utils/colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../models/quote.dart';
 import '../quote_service.dart';
-import 'quotes_screen.dart' show quoteStatusColor, formatQuoteMoney;
+import 'quotes_screen.dart' show formatQuoteMoney;
 
 /// Read-only detail for a single billing quote: client/trip context, line
 /// items and a totals ledger.

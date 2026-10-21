@@ -143,8 +143,8 @@ class CustomerService {
       'route_from': routeFrom,
       'route_to': routeTo,
       'cargo_description': cargoDescription,
-      if (cargoWeightKg != null) 'cargo_weight_kg': cargoWeightKg,
-      if (cargoVolumeM3 != null) 'cargo_volume_m3': cargoVolumeM3,
+      'cargo_weight_kg': ?cargoWeightKg,
+      'cargo_volume_m3': ?cargoVolumeM3,
       if (preferredDate != null)
         'preferred_date': preferredDate.toIso8601String().split('T').first,
       if (notes != null && notes.isNotEmpty) 'notes': notes,

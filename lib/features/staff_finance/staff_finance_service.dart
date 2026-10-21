@@ -59,7 +59,7 @@ class StaffFinanceService {
       'amount': amount,
       'payment_method': method,
       'payment_date': date.toIso8601String().split('T').first,
-      if (stage != null) 'payment_stage': stage,
+      'payment_stage': ?stage,
       if (referenceNumber != null && referenceNumber.isNotEmpty) 'reference_number': referenceNumber,
       if (notes != null && notes.isNotEmpty) 'notes': notes,
     };
