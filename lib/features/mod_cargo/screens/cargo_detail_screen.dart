@@ -1,9 +1,8 @@
-/**
- * @author Firstname Lastname <firstname.lastname@example.com>
- * @file Description
- * @desc Created on 2026-10-21 3:07:18 pm
- * @copyright GNU General Public License v3.0
- */
+/// @author Firstname Lastname <firstname.lastname@example.com>
+/// @file Description
+/// @desc Created on 2026-10-21 3:07:18 pm
+/// @copyright GNU General Public License v3.0
+library;
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/typography.dart';
@@ -414,7 +413,6 @@ class _SectionCard extends StatelessWidget {
     required this.title,
     this.eyebrow,
     required this.icon,
-    this.trailing,
     required this.children,
   });
 
@@ -442,7 +440,7 @@ class _MiniStat extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _MiniStat({required this.label, required this.value, this.valueColor});
+  const _MiniStat({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
