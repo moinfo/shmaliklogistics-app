@@ -5,6 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../../core/ui/typography.dart';
 import '../../../core/ui/ui_kit.dart';
 import '../../../core/utils/colors.dart';
+import '../../../core/utils/web_resilience.dart';
 import 'site_info_screen.dart';
 
 /// First screen for a signed-out visitor: the live marketing site in a web
@@ -26,10 +27,20 @@ class _LandingScreenState extends State<LandingScreen> {
   String? _error;
   String _lang = 'en';
   String _path = '';
+  bool _retrying = false;
+  late final WebResilience _resilience;
 
   @override
   void initState() {
     super.initState();
+    _resilience = WebResilience(
+      reload: () {
+        if (mounted) _controller.loadRequest(_uriFor(_path));
+      },
+      onConnectionBack: () {
+        if (mounted) setState(() { _error = null; _retrying = true; });
+      },
+    );
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(NavigationDelegate(
@@ -47,18 +58,45 @@ class _LandingScreenState extends State<LandingScreen> {
         },
         onProgress: (p) => setState(() => _progress = p),
         onPageStarted: (_) {
+          _resilience.pageStarted();
           setState(() => _error = null);
           _hideSiteChrome();
         },
         onPageFinished: (_) {
+          _resilience.pageFinished();
+          if (_retrying && mounted) setState(() => _retrying = false);
           _hideSiteChrome();
           _syncLanguage();
         },
         onWebResourceError: (e) {
-          if (e.isForMainFrame ?? true) setState(() => _error = e.description);
+          if (e.isForMainFrame ?? true) _onLoadFailed(e.description);
+        },
+        // Server-side failures (5xx) on the page itself get the same retry.
+        onHttpError: (e) {
+          final code = e.response?.statusCode ?? 0;
+          if (code >= 500 && e.request?.uri.host.endsWith('shmaliklogistics.co.tz') == true &&
+              e.request?.uri.path.contains('.') == false) {
+            _onLoadFailed('Server error ($code)');
+          }
         },
       ))
       ..loadRequest(Uri.parse(LandingScreen.url));
+  }
+
+  Uri _uriFor(String path) => Uri.parse('${LandingScreen.url}${path.isEmpty ? '' : path}');
+
+  void _onLoadFailed(String description) {
+    if (_resilience.failed()) {
+      setState(() => _retrying = true); // hide the browser's own error page
+    } else {
+      setState(() { _retrying = false; _error = description; });
+    }
+  }
+
+  @override
+  void dispose() {
+    _resilience.dispose();
+    super.dispose();
   }
 
   /// The app's top menu replaces the site's header (language, theme, menu), so
@@ -100,11 +138,12 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   void _load(String path) {
+    _resilience.reset();
     setState(() {
       _error = null;
       _path = path;
     });
-    _controller.loadRequest(Uri.parse('${LandingScreen.url}$path'));
+    _controller.loadRequest(_uriFor(path));
   }
 
   void _setLanguage(String code) {
@@ -187,6 +226,13 @@ class _LandingScreenState extends State<LandingScreen> {
             WebViewWidget(controller: _controller),
             if (_progress < 100 && _error == null)
               LinearProgressIndicator(value: _progress / 100, color: kPrimary),
+            if (_retrying && _error == null)
+              Positioned.fill(
+                child: Container(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: const Center(child: CircularProgressIndicator(color: kPrimary)),
+                ),
+              ),
             if (_error != null) _buildOffline(),
           ],
         ),

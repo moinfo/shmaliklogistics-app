@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../core/utils/app_theme.dart';
 import '../../../core/utils/colors.dart';
+import '../../../core/utils/web_resilience.dart';
 
 /// In-app browser for the live SH Malik Logistics website. [path] opens a
 /// specific page of the web portal (e.g. `system/hr/bonus`); the web session
@@ -21,24 +22,63 @@ class _WebsiteScreenState extends State<WebsiteScreen> {
   late final WebViewController _controller;
   int _progress = 0;
   String? _error;
+  bool _retrying = false;
+  late final WebResilience _resilience;
 
   @override
   void initState() {
     super.initState();
+    _resilience = WebResilience(
+      reload: () {
+        if (mounted) _controller.loadRequest(_target);
+      },
+      onConnectionBack: () {
+        if (mounted) setState(() { _error = null; _retrying = true; });
+      },
+    );
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (p) => setState(() => _progress = p),
-          onPageStarted: (_) => setState(() => _error = null),
+          onPageStarted: (_) {
+            _resilience.pageStarted();
+            setState(() => _error = null);
+          },
+          onPageFinished: (_) {
+            _resilience.pageFinished();
+            if (_retrying && mounted) setState(() => _retrying = false);
+          },
           onWebResourceError: (e) {
-            if (e.isForMainFrame ?? true) {
-              setState(() => _error = e.description);
+            if (e.isForMainFrame ?? true) _onLoadFailed(e.description);
+          },
+          onHttpError: (e) {
+            final code = e.response?.statusCode ?? 0;
+            final path = e.request?.uri.path ?? '';
+            if (code >= 500 && !path.contains('.') &&
+                e.request?.uri.host.endsWith('shmaliklogistics.co.tz') == true) {
+              _onLoadFailed('Server error ($code)');
             }
           },
         ),
       )
-      ..loadRequest(Uri.parse('${WebsiteScreen.url}/${widget.path}'));
+      ..loadRequest(_target);
+  }
+
+  Uri get _target => Uri.parse('${WebsiteScreen.url}/${widget.path}');
+
+  void _onLoadFailed(String description) {
+    if (_resilience.failed()) {
+      setState(() => _retrying = true); // hide the browser's own error page
+    } else {
+      setState(() { _retrying = false; _error = description; });
+    }
+  }
+
+  @override
+  void dispose() {
+    _resilience.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,6 +99,13 @@ class _WebsiteScreenState extends State<WebsiteScreen> {
         body: Stack(
           children: [
             WebViewWidget(controller: _controller),
+            if (_retrying && _error == null)
+              Positioned.fill(
+                child: Container(
+                  color: AppColors.surfaceVariant(context),
+                  child: const Center(child: CircularProgressIndicator(color: kPrimary)),
+                ),
+              ),
             if (_progress < 100 && _error == null)
               LinearProgressIndicator(value: _progress / 100, color: kPrimary),
             if (_error != null)
@@ -82,8 +129,9 @@ class _WebsiteScreenState extends State<WebsiteScreen> {
                       const SizedBox(height: 12),
                       FilledButton(
                         onPressed: () {
+                          _resilience.reset();
                           setState(() => _error = null);
-                          _controller.reload();
+                          _controller.loadRequest(_target);
                         },
                         child: const Text('Retry'),
                       ),

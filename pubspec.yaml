@@ -1,7 +1,7 @@
 name: shmalik_driver
 description: "SH Malik Logistics — Driver mobile app"
 publish_to: 'none'
-version: 1.0.1+4
+version: 1.0.1+5
 
 environment:
   sdk: ^3.10.7
@@ -30,6 +30,7 @@ dependencies:
   intl: ^0.19.0
   file_picker: ^8.1.7
   webview_flutter: ^4.14.1
+  connectivity_plus: ^7.3.2
 
 dev_dependencies:
   flutter_test:
