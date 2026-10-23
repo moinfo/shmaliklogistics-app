@@ -25,6 +25,7 @@ class _LandingScreenState extends State<LandingScreen> {
   int _progress = 0;
   String? _error;
   String _lang = 'en';
+  String _path = '';
 
   @override
   void initState() {
@@ -41,13 +42,7 @@ class _LandingScreenState extends State<LandingScreen> {
             Navigator.of(context).pushNamed('/login');
             return NavigationDecision.prevent;
           }
-          // About / Services / Contact open as native pages so they work even
-          // when the remote site is unreachable.
-          final info = SiteInfoScreen.pageForPath(path);
-          if (info != null) {
-            _openInfo(info);
-            return NavigationDecision.prevent;
-          }
+          if (onSite && request.isMainFrame) _path = path;
           return NavigationDecision.navigate;
         },
         onProgress: (p) => setState(() => _progress = p),
@@ -97,21 +92,19 @@ class _LandingScreenState extends State<LandingScreen> {
     } catch (_) {}
   }
 
-  void _openHome() {
+  /// Loads a page of the live website (as on the web). If it cannot be reached
+  /// the error overlay shows an offline copy of the same page.
+  void _openPage(String path) {
     Navigator.of(context).pop(); // close drawer
-    setState(() => _error = null);
-    _controller.loadRequest(Uri.parse(LandingScreen.url));
+    _load(path);
   }
 
-  void _openInfo(SitePage page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SiteInfoScreen(page: page)),
-    );
-  }
-
-  void _openInfoFromDrawer(SitePage page) {
-    Navigator.of(context).pop(); // close drawer
-    _openInfo(page);
+  void _load(String path) {
+    setState(() {
+      _error = null;
+      _path = path;
+    });
+    _controller.loadRequest(Uri.parse('${LandingScreen.url}$path'));
   }
 
   void _setLanguage(String code) {
@@ -194,52 +187,42 @@ class _LandingScreenState extends State<LandingScreen> {
             WebViewWidget(controller: _controller),
             if (_progress < 100 && _error == null)
               LinearProgressIndicator(value: _progress / 100, color: kPrimary),
-            if (_error != null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.wifi_off_rounded, size: 40, color: kMuted),
-                      const SizedBox(height: 12),
-                      const Text('Could not load the website.\nCheck your internet connection.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: kMuted)),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: () {
-                          setState(() => _error = null);
-                          _controller.loadRequest(Uri.parse(LandingScreen.url));
-                        },
-                        child: const Text('Retry'),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        children: [
-                          for (final p in SitePage.values)
-                            TextButton(
-                              onPressed: () => _openInfo(p),
-                              child: Text(switch (p) {
-                                SitePage.services => 'Services',
-                                SitePage.about => 'About',
-                                SitePage.contact => 'Contact',
-                              }),
-                            ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pushNamed('/login'),
-                            child: const Text('Login'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            if (_error != null) _buildOffline(),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Shown when the live page cannot be loaded: the same page's content from
+  /// the site (About / Services / Contact), or a plain retry for other pages.
+  Widget _buildOffline() {
+    final page = SiteInfoView.pageForPath(_path);
+    final retry = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.wifi_off_rounded, size: 36, color: kMuted),
+        const SizedBox(height: 10),
+        const Text('Could not reach the live website.\nCheck your internet connection.',
+            textAlign: TextAlign.center, style: TextStyle(color: kMuted)),
+        const SizedBox(height: 10),
+        FilledButton(
+          onPressed: () => _load(_path.isEmpty ? '/' : _path),
+          child: const Text('Retry'),
+        ),
+      ],
+    );
+    return Positioned.fill(
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: page == null
+            ? Center(child: Padding(padding: const EdgeInsets.all(24), child: retry))
+            : Column(
+                children: [
+                  Padding(padding: const EdgeInsets.fromLTRB(24, 16, 24, 4), child: retry),
+                  Expanded(child: SiteInfoView(page: page)),
+                ],
+              ),
       ),
     );
   }
@@ -268,13 +251,10 @@ class _LandingScreenState extends State<LandingScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _navTile(Icons.home_rounded, 'Home', _openHome),
-                    _navTile(Icons.local_shipping_rounded, 'Services',
-                        () => _openInfoFromDrawer(SitePage.services)),
-                    _navTile(Icons.info_outline_rounded, 'About',
-                        () => _openInfoFromDrawer(SitePage.about)),
-                    _navTile(Icons.mail_outline_rounded, 'Contact',
-                        () => _openInfoFromDrawer(SitePage.contact)),
+                    _navTile(Icons.home_rounded, 'Home', () => _openPage('/')),
+                    _navTile(Icons.local_shipping_rounded, 'Services', () => _openPage('/services')),
+                    _navTile(Icons.info_outline_rounded, 'About', () => _openPage('/about')),
+                    _navTile(Icons.mail_outline_rounded, 'Contact', () => _openPage('/contact')),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
                       child: SizedBox(
