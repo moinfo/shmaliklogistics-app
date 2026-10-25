@@ -211,7 +211,24 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
 
+    // Computed directly from viewInsets rather than relying on Scaffold's
+    // resizeToAvoidBottomInset — on this engine/Android combo the Scaffold's
+    // body constraints weren't actually shrinking when the keyboard opened
+    // (resizeToAvoidBottomInset is disabled below so we don't double-handle
+    // the inset), causing a real RenderFlex overflow instead of the intended
+    // in-place shrink.
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final topInset = MediaQuery.paddingOf(context).top;
+    // When the keyboard is open it already obstructs down to the bottom of
+    // the screen, so viewInsets.bottom covers that case; only fall back to
+    // the system nav bar's own inset when the keyboard is closed, to avoid
+    // double-subtracting both.
+    final bottomInset =
+        keyboardInset > 0 ? keyboardInset : MediaQuery.paddingOf(context).bottom;
+    final availableHeight = size.height - topInset - bottomInset;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFF1E0800),
       body: Stack(
         children: [
@@ -244,17 +261,31 @@ class _LoginScreenState extends State<LoginScreen>
             child: _GlowCircle(size: 300, opacity: 0.06),
           ),
 
-          // Content
-          SafeArea(
+          // Content, positioned below the status bar and above the keyboard
+          // (topInset/bottomInset already account for both, so no SafeArea
+          // here — it would double-subtract). Centered when it fits; when the
+          // keyboard leaves too little room for the logo + form together
+          // (Spacer/Expanded cannot be used safely with a scroll fallback —
+          // they require a bounded main-axis size, which conflicts with
+          // letting the ScrollView grow past it), it scrolls smoothly instead
+          // of overflowing: ConstrainedBox's minHeight lets the Column center
+          // within the available space when content fits, while the Column
+          // itself (no flex children) simply reports its natural height when
+          // it doesn't, which the ScrollView then scrolls to.
+          Positioned(
+            top: topInset,
+            left: 0,
+            right: 0,
+            height: availableHeight,
             child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
-              child: SizedBox(
-                height: size.height - MediaQuery.of(context).padding.top,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: availableHeight),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Spacer(flex: 2),
                     _buildLogoSection(),
-                    const Spacer(flex: 3),
+                    const SizedBox(height: 28),
                     FadeTransition(
                       opacity: _fadeAnim,
                       child: SlideTransition(
@@ -413,7 +444,7 @@ class _LoginScreenState extends State<LoginScreen>
             _buildField(
               controller: _loginController,
               label: 'Email or Card ID',
-              hint: 'e.g. juma@transmaslogistics.co.tz',
+              hint: 'msembe@transmaslogistics.co.tz',
               icon: Icons.badge_outlined,
               keyboardType: TextInputType.emailAddress,
               action: TextInputAction.next,
@@ -451,8 +482,7 @@ class _LoginScreenState extends State<LoginScreen>
             ],
 
             const SizedBox(height: 28),
-            _buildButton(),
-            if (_biometricReady) _buildBiometricSection(),
+            _buildButtonRow(),
             const SizedBox(height: 28),
             _buildFooter(),
           ],
@@ -521,49 +551,55 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildBiometricSection() {
-    return Column(
-      children: [
-        const SizedBox(height: 22),
-        Row(
-          children: [
-            Expanded(child: Divider(color: AppColors.border(context))),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text('or', style: AppType.body(12.5, color: kMuted)),
-            ),
-            Expanded(child: Divider(color: AppColors.border(context))),
+  /// Sign In button with a biometric quick-access icon docked inside its own
+  /// right alongside it in the same row (when biometrics are enrolled),
+  /// instead of a separate "or" section below.
+  ///
+  /// Always returns the same Row shape (even with biometrics unready) so the
+  /// widget at this Column slot never changes type mid-animation — swapping
+  /// between a bare button and a differently-shaped widget here previously
+  /// crashed with a `!semantics.parentDataDirty` assertion when
+  /// `_biometricReady` flipped true during the entrance fade/slide.
+  Widget _buildButtonRow() {
+    return SizedBox(
+      height: 54,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: _buildButton()),
+          if (_biometricReady) ...[
+            const SizedBox(width: 12),
+            _buildBiometricButton(),
           ],
-        ),
-        const SizedBox(height: 18),
-        InkWell(
-          onTap: _isLoading ? null : _biometricLogin,
-          borderRadius: BorderRadius.circular(40),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 62,
-                  height: 62,
-                  child: LiquidGlass(
-                    radius: BorderRadius.circular(31),
-                    child: Center(
-                      child: Icon(_biometricIcon, size: 28, color: kPrimary),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _biometricLabel,
-                  style: AppType.body(13, color: kPrimary, weight: FontWeight.w600),
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBiometricButton() {
+    return Semantics(
+      button: true,
+      label: _biometricLabel,
+      child: SizedBox(
+        width: 54,
+        child: Material(
+          color: const Color(0xFF1E0800).withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: _isLoading ? null : _biometricLogin,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: kPrimary.withValues(alpha: 0.35)),
+              ),
+              child: Center(
+                child: Icon(_biometricIcon, size: 24, color: kPrimary),
+              ),
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -644,6 +680,17 @@ class _LoginScreenState extends State<LoginScreen>
               ).copyWith(letterSpacing: 0.5),
             ),
           ],
+        ),
+        const SizedBox(height: 14),
+        Center(
+          child: Text(
+            'Powered by Moinfotech',
+            style: AppType.body(
+              10,
+              color: kMuted.withValues(alpha: 0.4),
+              weight: FontWeight.w600,
+            ).copyWith(letterSpacing: 0.3),
+          ),
         ),
       ],
     );

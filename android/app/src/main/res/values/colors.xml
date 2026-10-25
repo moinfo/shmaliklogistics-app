@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#0D1B3E</color>
+    <!-- Launch/splash screen background — matches the login screen's brand
+         orange so the transition from system splash into the app reads as
+         one continuous screen instead of a flash to black. -->
+    <color name="splash_background">#EA580C</color>
 </resources>

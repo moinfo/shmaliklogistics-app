@@ -69,7 +69,7 @@ const List<_MenuItem> _staffMenu = [
       _MenuItem(label: 'Proforma', icon: Icons.description_rounded, perm: 'billing_proformas.view'),
       _MenuItem(label: 'Invoices', icon: Icons.receipt_long_rounded, perm: 'billing_invoices.view', shellTab: 'Finance'),
       _MenuItem(label: 'Payments', icon: Icons.credit_card_rounded, perm: 'billing_payments.view', shellTab: 'Finance'),
-      _MenuItem(label: 'Debtors', icon: Icons.error_outline_rounded, perm: 'billing_invoices.view'),
+      _MenuItem(label: 'Debtors', icon: Icons.error_outline_rounded, perm: 'billing_invoices.view', shellTab: 'Finance'),
       _MenuItem(label: 'Quote Requests', icon: Icons.inbox_rounded, perm: 'billing_quote_requests.view'),
     ],
   ),
@@ -250,7 +250,12 @@ class AppDrawer extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
+              padding: EdgeInsets.fromLTRB(
+                8,
+                4,
+                8,
+                24 + MediaQuery.of(context).padding.bottom,
+              ),
               children: [
                 for (final item in items)
                   if (item.isGroup)
