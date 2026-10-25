@@ -3,6 +3,7 @@
 /// Mirrors the JSON returned by
 /// `GET /staff/modules/reports/route-profitability` →
 /// `{ "report": { ...summary, "rows": [...] } }`.
+library;
 
 double _d(dynamic v) => double.tryParse(v.toString()) ?? 0;
 int _i(dynamic v) => int.tryParse(v.toString()) ?? 0;

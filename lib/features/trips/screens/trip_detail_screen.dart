@@ -28,7 +28,7 @@ class TripDetailScreen extends StatefulWidget {
 
 class _TripDetailScreenState extends State<TripDetailScreen> {
   late Future<Map<String, dynamic>> _future;
-  int _navIndex = 1;
+  final int _navIndex = 1;
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       eyebrow: 'Trip detail',
       title: trip?.tripNumber ?? 'Trip',
       gradient: ModuleAccent.ops.colors,
-      subtitle: trip != null ? trip.statusLabel : null,
+      subtitle: trip?.statusLabel,
       actions: [
         HeaderIconButton(
             icon: Icons.refresh_rounded, onTap: _reload, tooltip: 'Refresh'),

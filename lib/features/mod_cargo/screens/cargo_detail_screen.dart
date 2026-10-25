@@ -408,7 +408,6 @@ class _SectionCard extends StatelessWidget {
     required this.title,
     this.eyebrow,
     required this.icon,
-    this.trailing,
     required this.children,
   });
 
@@ -436,7 +435,7 @@ class _MiniStat extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _MiniStat({required this.label, required this.value, this.valueColor});
+  const _MiniStat({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

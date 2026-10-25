@@ -28,7 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DashboardData? _data;
   bool _loading = true;
   String? _error;
-  int _navIndex = 0;
+  final int _navIndex = 0;
 
   @override
   void initState() {
@@ -521,7 +521,7 @@ class _DriverAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _initialsCircle(size, border),
+          errorBuilder: (_, _, _) => _initialsCircle(size, border),
           loadingBuilder: (_, child, progress) =>
               progress == null ? child : _initialsCircle(size, border),
         ),

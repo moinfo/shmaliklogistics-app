@@ -23,7 +23,7 @@ class _TripsScreenState extends State<TripsScreen> {
   late final TripService _service;
   late Future<List<Trip>> _future;
   String _filter = 'all';
-  int _navIndex = 1;
+  final int _navIndex = 1;
 
   static const _filters = [
     ('all',        'All'),

@@ -6,7 +6,6 @@ import '../../../core/ui/typography.dart';
 import '../../../core/ui/ui_kit.dart';
 import '../../../core/utils/app_theme.dart';
 import '../../../core/utils/colors.dart';
-import '../../../core/utils/formatters.dart';
 import '../cargo_service.dart';
 import '../models/cargo.dart';
 import 'cargo_detail_screen.dart';

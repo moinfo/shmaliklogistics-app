@@ -59,7 +59,7 @@ class _QuoteRequestDetailScreenState extends State<QuoteRequestDetailScreen> {
     return AppGradientHeader(
       eyebrow: 'Lead',
       title: req?.displayClient ?? 'Quote Request',
-      subtitle: req != null ? req.route : null,
+      subtitle: req?.route,
       padding: const EdgeInsets.fromLTRB(12, 16, 12, 22),
       actions: [
         HeaderIconButton(

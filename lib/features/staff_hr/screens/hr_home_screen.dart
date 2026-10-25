@@ -571,7 +571,7 @@ class _ApprovalCard extends StatelessWidget {
                   style: AppType.display(15.5, color: AppColors.textNavy(context)),
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
           const SizedBox(height: 12),

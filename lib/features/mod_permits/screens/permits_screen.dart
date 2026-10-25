@@ -263,7 +263,7 @@ class _PermitsScreenState extends State<PermitsScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
         itemCount: _statuses.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final (value, label) = _statuses[i];
           final selected = _statusFilter == value;
