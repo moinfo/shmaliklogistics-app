@@ -229,7 +229,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.45,
+      childAspectRatio: 1.14,
       children: cards,
     );
   }

@@ -204,7 +204,7 @@ class _RealEstatePropertiesScreenState
         physics: const NeverScrollableScrollPhysics(),
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.45,
+        childAspectRatio: 1.14,
         children: cards,
       ),
     );
