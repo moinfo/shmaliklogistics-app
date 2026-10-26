@@ -483,7 +483,9 @@ class _LoginScreenState extends State<LoginScreen>
 
             const SizedBox(height: 28),
             _buildButtonRow(),
-            const SizedBox(height: 28),
+            const SizedBox(height: 14),
+            _buildBackToHome(),
+            const SizedBox(height: 18),
             _buildFooter(),
           ],
         ),
@@ -693,6 +695,27 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
       ],
+    );
+  }
+
+  /// Back to the landing home page.
+  void _openHome() =>
+      Navigator.of(context).pushNamedAndRemoveUntil('/landing', (r) => false);
+
+  Widget _buildBackToHome() {
+    return Center(
+      child: TextButton.icon(
+        onPressed: _openHome,
+        icon: const Icon(Icons.arrow_back_rounded, size: 18, color: kPrimary),
+        label: Text(
+          'Back to home',
+          style: AppType.body(14, weight: FontWeight.w700, color: kPrimary),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
     );
   }
 

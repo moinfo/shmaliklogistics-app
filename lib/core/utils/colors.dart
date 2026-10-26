@@ -14,7 +14,7 @@ Color statusColor(String status) {
     case 'planned':    return const Color(0xFF94A3B8);
     case 'loading':    return const Color(0xFFF59E0B);
     case 'in_transit': return const Color(0xFF3B82F6);
-    case 'at_border':  return const Color(0xFF8B5CF6);
+    case 'at_border':  return const Color(0xFFEA580C);
     case 'delivered':  return const Color(0xFF22C55E);
     case 'completed':  return const Color(0xFF10B981);
     case 'cancelled':  return const Color(0xFFEF4444);
@@ -24,3 +24,10 @@ Color statusColor(String status) {
     default:           return const Color(0xFF94A3B8);
   }
 }
+
+/// Brand gradient shared by the top bars (same colours as the command header).
+const kBarGradient = LinearGradient(
+  colors: [Color(0xFF7A2800), Color(0xFFEA580C)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);

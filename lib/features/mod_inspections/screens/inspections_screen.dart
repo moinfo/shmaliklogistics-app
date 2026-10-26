@@ -36,7 +36,7 @@ Color inspectionTypeColor(Inspection i) {
     case 'pre_trip':
       return const Color(0xFF3B82F6);
     case 'periodic':
-      return const Color(0xFF8B5CF6);
+      return const Color(0xFFEA580C);
     case 'post_trip':
       return const Color(0xFF64748B);
     default:

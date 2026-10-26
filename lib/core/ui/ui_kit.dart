@@ -18,7 +18,7 @@ import '../utils/colors.dart';
 enum ModuleAccent {
   ops([Color(0xFFEA580C), Color(0xFFC2410C)]),
   finance([Color(0xFF0E9F6E), Color(0xFF22C55E)]),
-  hr([Color(0xFF6D28D9), Color(0xFF8B5CF6)]),
+  hr([Color(0xFF7A2800), Color(0xFFEA580C)]),
   brand([Color(0xFF7A2800), Color(0xFFEA580C)]),
   danger([Color(0xFFDC2626), Color(0xFFF97316)]);
 
@@ -288,6 +288,50 @@ class AppGradientHeader extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// The command header's gradient + texture as a plain background (used behind
+/// floating menus, e.g. the landing screen's drawer).
+class CommandBackdrop extends StatelessWidget {
+  final Widget child;
+  const CommandBackdrop({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF7A2800), Color(0xFFEA580C), Color(0xFF7A2800)],
+          stops: [0.0, 0.6, 1.0],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(painter: _CommandTexturePainter(const Color(0xFFEA580C))),
+          ),
+          Positioned(
+            top: -50,
+            right: -30,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [
+                  Colors.white.withValues(alpha: 0.14),
+                  Colors.white.withValues(alpha: 0.0),
+                ]),
+              ),
+            ),
+          ),
+          Positioned.fill(child: child),
+        ],
       ),
     );
   }

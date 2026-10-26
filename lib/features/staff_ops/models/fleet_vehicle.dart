@@ -75,7 +75,7 @@ class FleetVehicle {
     'active': 0xFF22C55E,
     'on_road': 0xFF3B82F6,
     'at_border': 0xFFF59E0B,
-    'loading': 0xFFA78BFA,
+    'loading': 0xFFEA580C,
     'idle': 0xFF64748B,
     'maintenance': 0xFFEF4444,
     'retired': 0xFF475569,

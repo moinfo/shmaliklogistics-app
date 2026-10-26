@@ -17,10 +17,10 @@ const ModuleAccent kExpenseAccent = ModuleAccent.finance;
 Color expenseCategoryColor(String category) {
   switch (category) {
     case 'fuel':          return const Color(0xFFF59E0B);
-    case 'tyre':          return const Color(0xFF8B5CF6);
+    case 'tyre':          return const Color(0xFFEA580C);
     case 'repair':        return const Color(0xFFEF4444);
     case 'driver_salary': return const Color(0xFF10B981);
-    case 'accommodation': return const Color(0xFF6366F1);
+    case 'accommodation': return const Color(0xFFC2410C);
     case 'toll':          return const Color(0xFF0EA5E9);
     case 'port':          return const Color(0xFF14B8A6);
     case 'permit_fee':    return const Color(0xFFEC4899);

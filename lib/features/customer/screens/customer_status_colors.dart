@@ -26,7 +26,7 @@ Color cargoStatusColor(String status) {
     case 'registered':
       return const Color(0xFF64748B);
     case 'loaded':
-      return const Color(0xFFA78BFA);
+      return const Color(0xFFEA580C);
     case 'in_transit':
       return const Color(0xFF3B82F6);
     case 'at_border':

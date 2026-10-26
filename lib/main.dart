@@ -6,9 +6,11 @@ import 'core/utils/app_theme.dart';
 import 'core/utils/theme_notifier.dart';
 import 'core/widgets/app_shell.dart';
 import 'core/widgets/connectivity_banner.dart';
+import 'core/widgets/diagnostics_gate.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/splash_screen.dart';
+import 'features/landing/screens/landing_screen.dart';
 import 'features/dashboard/screens/dashboard_screen.dart';
 import 'features/trips/screens/trips_screen.dart';
 import 'features/check_in/screens/check_in_screen.dart';
@@ -61,11 +63,15 @@ class _TransMasAppState extends State<TransMasApp> {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: mode,
-        builder: (context, child) => ConnectivityBanner(child: child ?? const SizedBox.shrink()),
+        builder: (context, child) => DiagnosticsGate(
+          navigatorKey: _navigatorKey,
+          child: ConnectivityBanner(child: child ?? const SizedBox.shrink()),
+        ),
         initialRoute: '/',
         routes: {
           '/':                  (_) => SplashScreen(authStorage: _authStorage),
           '/login':             (_) => LoginScreen(authService: _authService),
+          '/landing':           (_) => const LandingScreen(),
           '/home':              (_) => AppShell(apiClient: _apiClient),
           '/dashboard':         (_) => const DashboardScreen(),
           '/trips':             (_) => const TripsScreen(),

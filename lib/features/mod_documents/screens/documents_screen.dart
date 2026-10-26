@@ -281,7 +281,7 @@ Color _typeColor(String? type) {
     case 'vehicle':
       return const Color(0xFF0E9F6E);
     case 'driver':
-      return const Color(0xFF8B5CF6);
+      return const Color(0xFFEA580C);
     default:
       return kMuted;
   }
