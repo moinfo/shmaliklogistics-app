@@ -28,7 +28,6 @@ class TripDetailScreen extends StatefulWidget {
 
 class _TripDetailScreenState extends State<TripDetailScreen> {
   late Future<Map<String, dynamic>> _future;
-  final int _navIndex = 1;
 
   @override
   void initState() {

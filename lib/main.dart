@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'core/api/api_client.dart';
+import 'core/auth/app_session.dart';
 import 'core/services/auth_storage.dart';
 import 'core/utils/app_theme.dart';
 import 'core/utils/theme_notifier.dart';
 import 'core/widgets/app_shell.dart';
+import 'core/widgets/connectivity_banner.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/splash_screen.dart';
@@ -19,6 +21,8 @@ void main() async {
   await loadSavedTheme();
   runApp(const TransMasApp());
 }
+
+final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
 class TransMasApp extends StatefulWidget {
   const TransMasApp({super.key});
@@ -38,6 +42,12 @@ class _TransMasAppState extends State<TransMasApp> {
     _authStorage = AuthStorage();
     _apiClient = ApiClient(_authStorage);
     _authService = AuthService(api: _apiClient, storage: _authStorage);
+
+    // A rejected token (e.g. issued by another server) → back to the login screen.
+    ApiClient.onUnauthorized = () {
+      AppSession.instance.clear();
+      _navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+    };
   }
 
   @override
@@ -47,9 +57,11 @@ class _TransMasAppState extends State<TransMasApp> {
       builder: (_, mode, child) => MaterialApp(
         title: 'Trans-Mas Logistics',
         debugShowCheckedModeBanner: false,
+        navigatorKey: _navigatorKey,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: mode,
+        builder: (context, child) => ConnectivityBanner(child: child ?? const SizedBox.shrink()),
         initialRoute: '/',
         routes: {
           '/':                  (_) => SplashScreen(authStorage: _authStorage),

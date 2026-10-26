@@ -9,7 +9,7 @@ import '../../../core/utils/colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../models/invoice.dart';
 import '../staff_finance_service.dart';
-import 'finance_home_screen.dart' show invoiceStatusColor, formatMoney;
+import 'finance_home_screen.dart' show formatMoney;
 
 class InvoiceDetailScreen extends StatefulWidget {
   final int invoiceId;

@@ -53,7 +53,6 @@ class CheckInScreen extends StatefulWidget {
 
 class _CheckInScreenState extends State<CheckInScreen> {
   late final CheckInService _service;
-  final int _navIndex = 2;
 
   List<Trip> _trips = [];
   Trip? _selectedTrip;

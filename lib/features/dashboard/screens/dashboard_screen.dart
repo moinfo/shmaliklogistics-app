@@ -28,7 +28,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DashboardData? _data;
   bool _loading = true;
   String? _error;
-  final int _navIndex = 0;
 
   @override
   void initState() {
@@ -112,10 +111,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final initials = driver != null
         ? driver.name.split(' ').take(2).map((w) => w[0]).join().toUpperCase()
         : '';
-
-    final vehicleLine = driver?.vehicle != null
-        ? '${driver!.vehicle!.plate}  ·  ${driver.vehicle!.make}'
-        : 'Driver Portal';
 
     return AppGradientHeader(
       eyebrow: 'Driver',

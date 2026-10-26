@@ -26,6 +26,7 @@ import '../../features/mod_re_tenants/screens/tenants_screen.dart';
 import '../../features/mod_re_leases/screens/leases_screen.dart';
 import '../../features/mod_re_rent/screens/rent_screen.dart';
 import '../../features/mod_re_expenses/screens/expenses_screen.dart';
+import '../../features/mod_reference/screens/reference_screen.dart';
 
 /// Maps a navigation-drawer menu label to the built mobile screen for that
 /// module. Labels absent here fall back to the `ModulePlaceholderScreen`, so
@@ -55,12 +56,26 @@ final Map<String, Widget Function(ApiClient)> kModuleScreens = {
   'Employees': (api) => EmployeesScreen(apiClient: api),
   'Payroll': (api) => PayrollScreen(apiClient: api),
   'Salary Slips': (api) => PayrollScreen(apiClient: api),
+  'Salary Slip': (api) => PayrollScreen(apiClient: api),
+  // Reference lists (read-only, generic screen)
+  'Allowances': (api) => ReferenceScreen(apiClient: api, title: 'Allowances', eyebrow: 'HR', path: '/staff/modules/allowances', icon: Icons.card_giftcard_rounded),
+  'Notifications': (api) => ReferenceScreen(apiClient: api, title: 'Notifications', eyebrow: 'Alerts', path: '/staff/notifications', icon: Icons.notifications_rounded),
+  'Company Settings': (api) => ReferenceScreen(apiClient: api, title: 'Company Settings', eyebrow: 'Settings', path: '/staff/modules/settings/company', icon: Icons.business_rounded),
+  'Licence Classes': (api) => ReferenceScreen(apiClient: api, title: 'Licence Classes', eyebrow: 'Settings', path: '/staff/modules/settings/license-classes', icon: Icons.credit_card_rounded),
+  'Document Types': (api) => ReferenceScreen(apiClient: api, title: 'Document Types', eyebrow: 'Settings', path: '/staff/modules/settings/document-types', icon: Icons.description_rounded),
+  'Payroll Settings': (api) => ReferenceScreen(apiClient: api, title: 'Payroll Settings', eyebrow: 'Settings', path: '/staff/modules/settings/payroll', icon: Icons.account_balance_wallet_rounded),
+  'Deductions': (api) => ReferenceScreen(apiClient: api, title: 'Deductions', eyebrow: 'Settings', path: '/staff/modules/settings/deductions', icon: Icons.list_alt_rounded),
+  'Deduction Subscriptions': (api) => ReferenceScreen(apiClient: api, title: 'Deduction Subscriptions', eyebrow: 'Settings', path: '/staff/modules/settings/deduction-subscriptions', icon: Icons.link_rounded),
+  'Staff Bank Details': (api) => ReferenceScreen(apiClient: api, title: 'Staff Bank Details', eyebrow: 'Settings', path: '/staff/modules/settings/bank-details', icon: Icons.account_balance_rounded),
+  'Departments': (api) => ReferenceScreen(apiClient: api, title: 'Departments', eyebrow: 'Settings', path: '/staff/modules/settings/departments', icon: Icons.apartment_rounded),
+  'Roles & Permissions': (api) => ReferenceScreen(apiClient: api, title: 'Roles & Permissions', eyebrow: 'Settings', path: '/staff/modules/settings/roles', icon: Icons.vpn_key_rounded),
+  'Users': (api) => ReferenceScreen(apiClient: api, title: 'Users', eyebrow: 'Settings', path: '/staff/modules/settings/users', icon: Icons.person_rounded),
   'Recruitment': (api) => TalentScreen(apiClient: api),
   'Appraisals': (api) => TalentScreen(apiClient: api),
   // Reports (one screen, three report tabs)
   'Route Profitability': (api) => ReportsScreen(apiClient: api),
-  'Financial Summary': (api) => ReportsScreen(apiClient: api),
-  'Fleet Utilization': (api) => ReportsScreen(apiClient: api),
+  'Financial Summary': (api) => ReportsScreen(apiClient: api, initialTab: 1),
+  'Fleet Utilization': (api) => ReportsScreen(apiClient: api, initialTab: 2),
   // Real Estate
   'Properties': (api) => RealEstatePropertiesScreen(apiClient: api),
   'Tenants': (api) => RealEstateTenantsScreen(apiClient: api),

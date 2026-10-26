@@ -402,13 +402,11 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final String? eyebrow;
   final IconData icon;
-  final Widget? trailing;
   final List<Widget> children;
   const _SectionCard({
     required this.title,
     this.eyebrow,
     required this.icon,
-    this.trailing,
     required this.children,
   });
 
@@ -423,7 +421,6 @@ class _SectionCard extends StatelessWidget {
             eyebrow: eyebrow,
             icon: icon,
             accent: ModuleAccent.ops,
-            trailing: trailing,
           ),
           ...children,
         ],
@@ -435,8 +432,7 @@ class _SectionCard extends StatelessWidget {
 class _MiniStat extends StatelessWidget {
   final String label;
   final String value;
-  final Color? valueColor;
-  const _MiniStat({required this.label, required this.value, this.valueColor});
+  const _MiniStat({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -446,7 +442,7 @@ class _MiniStat extends StatelessWidget {
         Text(label, style: AppType.body(10.5, color: kMuted, weight: FontWeight.w500)),
         const SizedBox(height: 2),
         Text(value,
-            style: AppType.number(15, color: valueColor ?? AppColors.textPrimary(context))),
+            style: AppType.number(15, color: AppColors.textPrimary(context))),
       ],
     );
   }

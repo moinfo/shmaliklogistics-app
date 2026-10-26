@@ -4,6 +4,7 @@ import '../auth/app_session.dart';
 import '../ui/typography.dart';
 import '../utils/app_theme.dart';
 import '../utils/colors.dart';
+import '../../features/staff_finance/screens/finance_home_screen.dart' show financeTabRequest;
 
 /// One navigation entry, ported from `web/.../layouts/DashboardLayout.jsx`.
 ///
@@ -91,8 +92,7 @@ const List<_MenuItem> _staffMenu = [
       _MenuItem(label: 'Advances', icon: Icons.attach_money_rounded, perm: 'hr_advances.view', shellTab: 'HR'),
       _MenuItem(label: 'Loans', icon: Icons.account_balance_rounded, perm: 'hr_loans.view', shellTab: 'HR'),
       _MenuItem(label: 'Allowances', icon: Icons.card_giftcard_rounded, perm: 'hr_allowances.view'),
-      _MenuItem(label: 'Bonus', icon: Icons.emoji_events_rounded, perm: 'hr_bonus.view'),
-      _MenuItem(label: 'Attendance', icon: Icons.schedule_rounded, perm: 'hr_attendance.view'),
+      _MenuItem(label: 'Attendance', icon: Icons.schedule_rounded, perm: 'hr_attendance.view', shellTab: 'HR'),
       _MenuItem(label: 'Salary Slip', icon: Icons.article_rounded, perm: 'hr_salary_slips.view'),
       _MenuItem(label: 'Appraisals', icon: Icons.star_rounded, perm: 'hr_appraisals.view'),
       _MenuItem(label: 'Recruitment', icon: Icons.person_search_rounded, perm: 'hr_recruitment.view'),
@@ -134,7 +134,7 @@ const List<_MenuItem> _staffMenu = [
       _MenuItem(label: 'Route Profitability', icon: Icons.bar_chart_rounded, perm: 'reports_route_profitability.view'),
       _MenuItem(label: 'Financial Summary', icon: Icons.show_chart_rounded, perm: 'reports_financial_summary.view'),
       _MenuItem(label: 'Fleet Utilization', icon: Icons.local_shipping_rounded, perm: 'reports_fleet_utilization.view'),
-      _MenuItem(label: 'Debtors / AR', icon: Icons.error_outline_rounded, perm: 'billing_invoices.view'),
+      _MenuItem(label: 'Debtors / AR', icon: Icons.error_outline_rounded, perm: 'billing_invoices.view', shellTab: 'Finance'),
     ],
   ),
 
@@ -204,6 +204,14 @@ class AppDrawer extends StatelessWidget {
     Navigator.of(context).pop(); // close the drawer first
     final tab = item.shellTab;
     if (tab != null && availableTabs.contains(tab)) {
+      if (tab == 'Finance') {
+        // Open the Finance tab that matches the chosen menu item.
+        financeTabRequest.value = switch (item.label) {
+          'Payments' => 1,
+          'Debtors' || 'Debtors / AR' => 2,
+          _ => 0,
+        };
+      }
       onSelectTab(tab);
       return;
     }

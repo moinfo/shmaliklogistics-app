@@ -49,6 +49,10 @@ class NumberFormatHelper {
 /// Staff Finance feature entry point — embedded into the permission-driven
 /// app shell (Agent 6). Internally exposes Invoices, Payments and Debtors
 /// sections via a top tab bar. Detail screens are pushed via [Navigator].
+/// Lets the navigation drawer ask the Finance screen to open a specific tab
+/// (0 = Invoices, 1 = Payments, 2 = Debtors). Cleared once consumed.
+final ValueNotifier<int?> financeTabRequest = ValueNotifier<int?>(null);
+
 class FinanceHomeScreen extends StatefulWidget {
   const FinanceHomeScreen({super.key, required this.apiClient});
 
@@ -71,14 +75,34 @@ class _FinanceHomeScreenState extends State<FinanceHomeScreen>
   void initState() {
     super.initState();
     _service = StaffFinanceService(widget.apiClient);
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: (financeTabRequest.value ?? 0).clamp(0, 2),
+    );
+    financeTabRequest.value = null;
+    financeTabRequest.addListener(_onTabRequest);
     _invoicesFuture = _service.fetchInvoices();
     _paymentsFuture = _service.fetchPayments();
     _debtorsFuture = _service.fetchDebtors();
+    // Tabs build lazily, so a failed request for a tab nobody has opened yet
+    // would otherwise be reported as an unhandled exception. FutureBuilder
+    // still receives the error once its tab is shown.
+    _invoicesFuture.ignore();
+    _paymentsFuture.ignore();
+    _debtorsFuture.ignore();
+  }
+
+  void _onTabRequest() {
+    final i = financeTabRequest.value;
+    if (i == null) return;
+    _tabController.animateTo(i.clamp(0, 2));
+    financeTabRequest.value = null;
   }
 
   @override
   void dispose() {
+    financeTabRequest.removeListener(_onTabRequest);
     _tabController.dispose();
     super.dispose();
   }
@@ -87,11 +111,11 @@ class _FinanceHomeScreenState extends State<FinanceHomeScreen>
     setState(() {
       switch (_tabController.index) {
         case 0:
-          _invoicesFuture = _service.fetchInvoices();
+          _invoicesFuture = _service.fetchInvoices()..ignore();
         case 1:
-          _paymentsFuture = _service.fetchPayments();
+          _paymentsFuture = _service.fetchPayments()..ignore();
         case 2:
-          _debtorsFuture = _service.fetchDebtors();
+          _debtorsFuture = _service.fetchDebtors()..ignore();
       }
     });
   }

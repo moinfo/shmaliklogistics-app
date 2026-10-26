@@ -14,9 +14,12 @@ import '../reports_service.dart';
 /// internal tabs (Route Profitability / Financial Summary / Fleet Utilization).
 /// Each tab shows headline [StatCard]s plus a list of [AppCard] rows.
 class ReportsScreen extends StatefulWidget {
-  const ReportsScreen({super.key, required this.apiClient});
+  const ReportsScreen({super.key, required this.apiClient, this.initialTab = 0});
 
   final ApiClient apiClient;
+
+  /// 0 = Route Profitability, 1 = Financial Summary, 2 = Fleet Utilization.
+  final int initialTab;
 
   @override
   State<ReportsScreen> createState() => _ReportsScreenState();
@@ -35,7 +38,7 @@ class _ReportsScreenState extends State<ReportsScreen>
   void initState() {
     super.initState();
     _service = ReportsService(widget.apiClient);
-    _tabs = TabController(length: 3, vsync: this);
+    _tabs = TabController(length: 3, vsync: this, initialIndex: widget.initialTab.clamp(0, 2));
     _loadAll();
   }
 

@@ -435,13 +435,26 @@ class StatCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    value,
-                    style: AppType.number(27,
-                        color: highlight ? kDanger : AppColors.textNavy(context)),
+                  // One line, shrunk to fit — long values like "TZS 12.1M" must not wrap.
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      value,
+                      maxLines: 1,
+                      style: AppType.number(27,
+                          color: highlight ? kDanger : AppColors.textNavy(context)),
+                    ),
                   ),
                   const SizedBox(height: 3),
-                  Text(label, style: AppType.body(12.5, color: kMuted, weight: FontWeight.w600)),
+                  // Never break a label mid-word in narrow cards (e.g. 4-across rows).
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(label,
+                        maxLines: 1,
+                        style: AppType.body(12.5, color: kMuted, weight: FontWeight.w600)),
+                  ),
                 ],
               ),
             ),
