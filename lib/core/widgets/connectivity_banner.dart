@@ -14,7 +14,9 @@ class ConnectivityBanner extends StatefulWidget {
 
 class _ConnectivityBannerState extends State<ConnectivityBanner> {
   StreamSubscription<List<ConnectivityResult>>? _sub;
+  Timer? _backOnlineTimer;
   bool _offline = false;
+  bool _backOnline = false;
 
   @override
   void initState() {
@@ -25,11 +27,22 @@ class _ConnectivityBannerState extends State<ConnectivityBanner> {
 
   void _update(List<ConnectivityResult> results) {
     final offline = results.isEmpty || results.every((r) => r == ConnectivityResult.none);
-    if (mounted && offline != _offline) setState(() => _offline = offline);
+    if (!mounted || offline == _offline) return;
+    setState(() {
+      _offline = offline;
+      _backOnline = !offline; // just reconnected → flash "Back online"
+    });
+    _backOnlineTimer?.cancel();
+    if (!offline) {
+      _backOnlineTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted) setState(() => _backOnline = false);
+      });
+    }
   }
 
   @override
   void dispose() {
+    _backOnlineTimer?.cancel();
     _sub?.cancel();
     super.dispose();
   }
@@ -39,21 +52,21 @@ class _ConnectivityBannerState extends State<ConnectivityBanner> {
     return Column(
       children: [
         Expanded(child: widget.child),
-        if (_offline)
+        if (_offline || _backOnline)
           Material(
-            color: const Color(0xFFB3261E),
+            color: _offline ? const Color(0xFFB3261E) : const Color(0xFF15803D),
             child: SafeArea(
               top: false,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.wifi_off_rounded, size: 16, color: Colors.white),
-                    SizedBox(width: 8),
+                  children: [
+                    Icon(_offline ? Icons.wifi_off_rounded : Icons.wifi_rounded, size: 16, color: Colors.white),
+                    const SizedBox(width: 8),
                     Text(
-                      'No internet connection',
-                      style: TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
+                      _offline ? 'No internet connection' : 'Back online',
+                      style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),

@@ -52,9 +52,19 @@ class ApiClient {
     return headers;
   }
 
+  /// Reads are idempotent, so a transient network failure (no connection,
+  /// timeout, dropped socket — statusCode 0) is retried up to twice with a short
+  /// backoff before the error is shown. Writes are never retried automatically.
   Future<dynamic> get(String path) async {
     final headers = await _headers();
-    return _guard(() => http.get(Uri.parse('$baseUrl$path'), headers: headers));
+    for (var attempt = 0;; attempt++) {
+      try {
+        return await _guard(() => http.get(Uri.parse('$baseUrl$path'), headers: headers));
+      } on ApiException catch (e) {
+        if (e.statusCode != 0 || attempt >= 2) rethrow;
+        await Future<void>.delayed(Duration(milliseconds: 600 * (attempt + 1)));
+      }
+    }
   }
 
   Future<dynamic> post(String path, Map<String, dynamic> body, {bool auth = true}) async {
